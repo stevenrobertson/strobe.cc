@@ -1,0 +1,32 @@
+## -*- coding: utf-8 -*-
+<%inherit file="base.html" />
+
+<%def name="meta()">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="author" content="Steven Robertson" />
+    <title>strobe.cc</title>
+</%def>
+
+<div class="greeting">
+    <div class="big">
+        Hello.</div>
+    <p>I'm Steven, and I've written a few things for you:</p>
+</div>
+
+<div class="article_list">
+% for idx, article in reversed(list(enumerate(article_list))):
+    <a href="/${article['path']}" title="${article['html']['title']}">
+        <div class="article_list_entry">
+            <span class="article_list_number">${idx+1}</span>
+% if 'Article' in article.get('tags', ''):
+            <span class="article_list_title_major">
+% else:
+            <span class="article_list_title_minor">
+% endif
+                ${article['html']['title']}
+            </span>
+        </div>
+    </a>
+%endfor
+</div>
+
