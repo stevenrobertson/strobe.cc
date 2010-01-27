@@ -1,9 +1,14 @@
 RedirectMatch permanent /articles/(.*)$ /$1
-RedirectMatch permanent /(.*)/index.html$ /$1/
 
 Redirect permanent /3.html /do_androids_render/
 Redirect permanent /4.html /touchy_feely/
 Redirect permanent /feeds/articles /feeds/content.xml
 Redirect permanent /feeds/entries /feeds/content.xml
+
+# No secrets here.
+<Files ~ "^\.ht">
+    Order allow,deny
+    Allow from all
+</Files>
 
 
