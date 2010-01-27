@@ -115,7 +115,7 @@ class SiteProcessor:
     def _write_doc(self, doc, path):
         """Writes a document to the filesystem as HTML."""
         # set the document permalink path, using a solid guess
-        relpath = os.path.relpath(path, self.root)
+        relpath = os.path.join(self.root, path)[len(self.root)+1:]
         if relpath.endswith('index.html'):
             relpath = relpath[:-10]
         doc['path'] = relpath
