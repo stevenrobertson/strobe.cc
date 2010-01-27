@@ -3,8 +3,6 @@ The Codec Game
 
 :Author: Steven Robertson
 :Contact: steven@strobe.cc
-:Published: 2009-11-12
-:Updated: 2009-12-30
 :Tags: Video, Algorithm, Article
 :Abstract:
     Evaluating the quality of a video codec analytically is both a critical
