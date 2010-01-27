@@ -70,7 +70,7 @@ class SiteProcessor:
             mangled.replaceWith(pre)
         return unicode(prettysoup).encode('utf-8')
 
-    def _clean_html(self, doc, mathml=True):
+    def _clean_html(self, doc, mathml=True, absolutize=False):
         """Prepares HTML for rendering. A lot of special cases."""
         bodysoup = BeautifulSoup(doc['html']['body'])
         # we need to toy with 'abstract' to get it to behave
@@ -105,6 +105,19 @@ class SiteProcessor:
         # fix some crazy Pygments nonsense
         for pre in bodysoup.findAll('pre', {'style': "line-height: 125%"}):
             del pre['style']
+
+        # for feeds and whatnot
+        def absolve(elem, name):
+            href = elem[name]
+            if href.startswith('/'):
+                elem[name] = 'http://strobe.cc' + href
+            elif '://' not in href and not href.startswith('#'):
+                elem[name] = 'http://strobe.cc/' + doc['path'] + href
+        if absolutize:
+            map(lambda a: absolve(a, 'href'),
+                bodysoup.findAll('a', {'href': True}))
+            map(lambda img: absolve(img, 'src'),
+                bodysoup.findAll('img', {'src': True}))
 
         cleaned_body = unicode(bodysoup)
         if mathml and 'MathML' in doc.get('tags', ''):
@@ -218,7 +231,7 @@ class SiteProcessor:
             updated = ('updated' in article)
             if updated:
                 date = max(article['published'], max(article['updated']))
-            html = self._clean_html(article, mathml=False)
+            html = self._clean_html(article, mathml=False, absolutize=True)
             articles.append((date, updated, article, html))
         articles.sort()
         tmpl = self.template_lookup.get_template("feed.xml")
