@@ -1,0 +1,207 @@
+/* resets */
+body, h1, h2, h3, h4, h5, blockquote, pre, code, cite, a {
+    margin: 0;
+    padding: 0;
+    border: 0;
+    outline: 0;
+    font-size: 100%;
+    font-weight: normal;
+    text-decoration: none;
+    vertical-align: baseline;
+    background: transparent;
+    color: black;
+}
+
+img {border: none;}
+
+/* all fonts, for ease of screwing around with typekit */
+body {font-family: "skolar-1", "skolar-2", "Georgia", serif;}
+div.topbar, .footnote, div.big, div.fhdr {
+    font-family: "mentone-1", "mentone-2", sans-serif;
+}
+
+div.docinfo_key, div.contents p, h2, h3, .smallcaps {
+    font-family: "ff-meta-sc-web-pro-1", "ff-meta-sc-web-pro-2";
+    text-transform: lowercase;
+}
+
+pre, tt {
+    font-family: "inconsolata-1", "inconsolata-2", monospace;
+}
+
+pre {line-height: normal;}
+
+/* page basics, grid layout. */
+.iwrap {
+    padding-left: 180px;
+    margin-right: 180px;
+}
+
+.fwrap {
+    padding-left: 90px;
+    margin-right: 90px;
+}
+
+.bcen1 {
+    position: relative;
+    margin: auto;
+    width: 660px;
+}
+
+.fcen1 {
+    width: 840px;
+    margin: auto;
+    padding: 0px;
+}
+
+.fcen2 {
+    width: 840px;
+    margin-left: -90px;
+}
+
+a {
+    color: #04a;
+    text-decoration: none;
+}
+
+h1 {font-size: 220%;}
+
+h2, h3 {margin-bottom: 1em;}
+
+h2 {font-size: 135%;}
+h3 {font-size: 115%;}
+
+h1 a, h2 a, h3 a, h4 a, h5 a {color: black;}
+
+div.article_body {
+    font-size: 110%;
+    color: #111;
+    line-height: 140%;
+}
+
+.w1,.w2,.w3,.w4,.w5,.w6,.w7,.w8,.w9,.w10,.w11 {padding-right: 15px;}
+
+/* only indent nested lists */
+ul {-moz-padding-start: 0;}
+ul ul {-moz-padding-start: 60px;}
+
+li {margin: 1em 0;}
+
+.w1 {width: 45px;}
+.w2 {width: 105px;}
+.w3 {width: 165px;}
+.w4 {width: 225px;}
+.w5 {width: 285px;}
+.w6 {width: 345px;}
+.w7 {width: 405px;}
+.w8 {width: 465px;}
+
+.fl {float: left;}
+.fr {float: right;}
+.ma {margin: auto;}
+
+.fw5 {font-weight: 500;}
+.fw7 {font-weight: 700;}
+.fsi {font-style: italic;}
+.fsn {font-style: normal;}
+.fs9 {font-size: 90%;}
+
+div.topbar {
+    width: 100%;
+    min-width: 860px;
+    color: white;
+    background-color: #555;
+}
+
+div.topbar div a {
+    color: white;
+}
+
+div.topleft {
+    padding-left: 5px;
+    font-size: 160%;
+    float: left;
+}
+
+div.topleft a {font-weight: 700;}
+
+div.topright {
+    padding: .4em 5px .2em;
+    font-size: 110%;
+    text-align: right;
+}
+
+div.content {
+    margin: 5em auto 0;
+    min-height: 20em;
+}
+
+sup {line-height: 0pt;}
+
+div.fnwrap {
+    position: relative;
+}
+
+.footnote {
+    line-height: 110%;
+    font-size: 80%;
+    position: absolute;
+    left: -180px;
+    top: -45px;
+    width: 160px;
+    padding-right: 10px;
+    text-align: right;
+}
+
+/* all footer stuff */
+div.footer {
+    display: inline;
+    position: relative;
+    margin: 0;
+    padding: 0;
+}
+
+div.footer>div>div>div>div a {
+    color: #acf;
+}
+
+div.fbar {
+    width: 100%;
+    min-width: 860px;
+    padding: 10px 0;
+    color: white;
+    margin: 0;
+}
+
+div.ftop {
+    background-color: #222;
+    height: 90px;
+    margin-top: 4em;
+}
+
+div.fbot {
+    height: 175px;
+    background-color: #111;
+}
+
+div.fhdr {
+    font-weight: bold;
+}
+
+div.fhdra {padding-bottom: .6em;}
+
+div.fhdrb {margin-bottom: 0em;}
+
+div.ftop1 {
+    position: absolute;
+    left: -180px;
+    width: 160px;
+    padding: 0 15px 0 5px;
+    line-height: 90px;
+}
+
+a.ftop1l {
+    color: white;
+    font-size: 200%;
+    font-weight: 700;
+}

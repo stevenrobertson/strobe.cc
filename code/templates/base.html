@@ -1,382 +1,85 @@
 ## -*- coding: utf-8 -*-
 <!DOCTYPE html>
 <html>
-    <head>
-        <script type="text/javascript" src="http://use.typekit.com/qtl6xkn.js"></script>
-        <script type="text/javascript">try{Typekit.load();}catch(e){}</script>
-
-        ${self.meta()}
-<style type="text/css">
-/* resets */
-body, h1, h2, h3, h4, h5, blockquote, pre, code, cite, a {
-    margin: 0;
-    padding: 0;
-    border: 0;
-    outline: 0;
-    font-size: 100%;
-    font-weight: normal;
-    text-decoration: none;
-    vertical-align: baseline;
-    background: transparent;
-    color: black;
-}
-
-img {border: none;}
-
-/* all fonts, for ease of screwing around with typekit */
-body {font-family: "skolar-1", "skolar-2";}
-div.topbar, .footnote, div.big, div.fhdr {
-    font-family: "mentone-1", "mentone-2";
-}
-
-div.docinfo_key, div.contents p, h2, h3, .smallcaps {
-    font-family: "ff-meta-sc-web-pro-1", "ff-meta-sc-web-pro-2";
-    text-transform: lowercase;
-}
-
-pre, tt {
-    font-family: "inconsolata-1", "inconsolata-2", monospace;
-    font-size: 80%;
-}
-
-pre {line-height: normal;}
-
-/* page basics */
-.iwrap {
-    padding-left: 180px;
-    margin-right: 180px;
-}
-
-.fwrap {
-    padding-left: 90px;
-    margin-right: 90px;
-}
-
-.bcen1 {
-    position: relative;
-    margin: auto;
-    width: 660px;
-}
-
-.fcen1 {
-    width: 840px;
-    margin: auto;
-    padding: 0px;
-}
-
-.fcen2 {
-    width: 840px;
-    margin-left: -90px;
-}
-
-a {
-    color: #04a;
-    text-decoration: none;
-}
-
-h1 {font-size: 220%;}
-
-h2, h3 {margin-bottom: 1em;}
-
-h2 {font-size: 135%;}
-h3 {font-size: 115%;}
-
-h1 a, h2 a, h3 a, h4 a, h5 a {color: black;}
-
-div.article_body {
-    font-size: 110%;
-    color: #111;
-    line-height: 140%;
-}
-
-.w1,.w2,.w3,.w4,.w5,.w6,.w7,.w8,.w9,.w10,.w11 {padding-right: 15px;}
-
-/* only indent nested lists */
-ul {-moz-padding-start: 0;}
-ul ul {-moz-padding-start: 60px;}
-
-/* re-pad list elements outside of TOC */
-li {margin: 1em 0;}
-div.contents li {margin: 0;}
-
-
-.w1 {width: 45px;}
-.w2 {width: 105px;}
-.w3 {width: 165px;}
-.w4 {width: 225px;}
-.w5 {width: 285px;}
-.w6 {width: 345px;}
-.w7 {width: 405px;}
-.w8 {width: 465px;}
-
-.fl {float: left;}
-.fr {float: right;}
-.ma {margin: auto;}
-
-.fw5 {font-weight: 500;}
-.fw7 {font-weight: 700;}
-.fsi {font-style: italic;}
-.fsn {font-style: normal;}
-.fs9 {font-size: 90%;}
-
-/* header on article pages */
-div.topbar {
-    width: 100%;
-    color: white;
-    background-color: black;
-}
-
-div.topbar div a {
-    color: white;
-}
-
-div.topleft {
-    padding-left: 5px;
-    font-size: 160%;
-    float: left;
-}
-
-div.topleft a {font-weight: 700;}
-
-div.topright {
-    padding: .4em 5px .2em;
-    font-size: 110%;
-    text-align: right;
-}
-
-div.abstract {
-    font-style: italic;
-    font-size: 110%;
-}
-
-div.docinfo {margin: 1em 0 2em;}
-
-div.docinfo_key {font-size: 110%;}
-
-div.contents p {
-    padding: 0;
-    margin: 1em 0 0 0;
-}
-
-div.contents a {color: black;}
-
-div.contents ul {
-    margin: 0;
-    list-style: none;
-}
-
-div.contents>ul{
-    -moz-padding-start: 0;
-    list-style: decimal;
-}
-
-div.content {margin: 5em auto 0;}
-
-sup {line-height: 0pt;}
-
-
-div.article_list a {
-    color: black;
-}
-
-div.fnwrap {
-    position: relative;
-}
-
-.footnote {
-    line-height: 110%;
-    font-size: 80%;
-    position: absolute;
-    left: -180px;
-    top: -45px;
-    width: 160px;
-    padding-right: 10px;
-    text-align: right;
-}
-
-div.desc {
-    font-size: 75%;
-    color: #333;
-    font-style: italic;
-}
-
-.comments {
-    margin: 3em 0;
-    padding: 1em;
-    border: 3px solid gray;
-}
-
-/* Pygments */
-table.highlighttable {
-    background: #f8f8f8;
-    width: 660px;
-    line-height: 100%;
-}
-
-div.linenodiv {
-    border-right: 1px solid #666;
-}
-
-div.linenodiv pre {color: #666;}
-
-/* homepage */
-div.big {
-    font-size: 350%;
-    line-height: 70%;
-    font-weight: 700;
-    color: #111;
-}
-
-div.article_list {
-    font-size: 140%;
-    padding: 0.5em 0 5em 0;
-}
-
-div.article_list_entry {
-    padding-bottom: 0.5em;
-}
-
-span.article_list_number {
-    position: absolute;
-    left: -1.3em;
-    width: 0.5em;
-    text-align: right;
-}
-
-
-/* I used to differentiate the TOC on the basis of length, but I changed
-   my mind */
-span.article_list_title_major {
-}
-
-span.article_list_title_minor {
-}
-
-
-/* all footer stuff */
-div.footer {
-    display: inline;
-    position: relative;
-    margin: 0;
-    padding: 0;
-}
-
-div.footer>div>div>div>div a {
-    color: #acf;
-}
-
-div.fbar {
-    width: 100%;
-    min-width: 860px;
-    padding: 10px 0;
-    color: white;
-    margin: 0;
-}
-
-div.ftop {
-    background-color: #222;
-    height: 90px;
-}
-
-div.fbot {
-    height: 175px;
-    background-color: #111;
-}
-
-div.fhdr {
-    font-weight: bold;
-}
-
-div.fhdra {padding-bottom: .6em;}
-
-div.fhdrb {margin-bottom: 0em;}
-
-div.ftop1 {
-    position: absolute;
-    left: -180px;
-    width: 160px;
-    padding: 0 15px 0 5px;
-    line-height: 90px;
-}
-
-a.ftop1l {
-    color: white;
-    font-size: 200%;
-    font-weight: 700;
-}
-
-</style>
-    </head>
-    <body>
-        <script type="text/javascript">
-
-  var _gaq = _gaq || [];
-  _gaq.push(['_setAccount', 'UA-9095438-3]);
-  _gaq.push(['_trackPageview']);
-
-  (function() {
-    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(ga);
-  })();
-
-</script>
-        <div class="topbar">
-            <div class="topleft">
-                <a href="/">strobe.cc</a>
-            </div>
-            <div class="topright">
-                <a href="/about/">about / source</a>
-            </div>
-        </div>
-
-        <div class="iwrap"><div class="bcen1"><div class="content">
-            ${self.body()}
-        </div></div></div>
-
-    <div class="footer">
-        <div class="fbar ftop"><div class="iwrap"><div class="bcen1">
-            <a class="ftop1l" href="/"><div class="ftop1 fhdr">strobe.cc</div></a>
-                <div class="w5 fl">
-                    <div class="fhdr">I'm Steven Robertson.</div>
-                    I write things for you and post them here.
-                    I'm a hacker and musician who just wants to help out.
-                </div>
-                <div class="w6 fr">
-                    <div class="fhdr">Current projects</div>
-                    I'm researching a
-                    <a href="/articles/fermi">new video codec</a>, maintaining
-                    <a href="http://code.google.com/p/quodlibet/">Quod Libet</a>,
-                    exploring CUDA devices and techniques, and
-                    wrapping up at <a href="http://ucf.edu/">UCF</a>.
-                </div>
-
-        </div></div></div>
-
-        <div class="fbar fbot"><div class="iwrap"><div class="bcen1">
-                <div class="w5 fl">
-                    <div class="fs9 fsi">Copyright 2009 by <span xmlns:dc="http://purl.org/dc/elements/1.1/" href="http://purl.org/dc/dcmitype/Text" rel="dc:type"></span><a xmlns:cc="http://creativecommons.org/ns#" href="http://strobe.cc" property="cc:attributionName" rel="cc:attributionURL">Steven Robertson</a>.<br /><a rel="license" href="http://creativecommons.org/licenses/by/3.0/us/">CC Attribution 3.0 US</a>.<a xmlns:dc="http://purl.org/dc/elements/1.1/" href="http://strobe.cc" rel="dc:source"></a><br />
-                    steven@strobe.cc / +1 (813) 728 7254</div>
-            </div>
-            <div class="w6 fr">
-                    <div class="fhdr">I can be your friend.</div>
-                    <div class="fhdra">You should follow me on
-                        <a href="http://twitter.com/_srobertson/">Twitter.</a>
-                    </div>
-                    <div class="fhdr">You can be my boss.</div>
-                    <div class="fhdra">I will be graduating soon. <a href="/articles/hire_me/">Make me yours.</a>
-
-                    </div>
-
-
-                    <br /><br />
-
-                    </div>
-                </div>
-            </div></div></div>
-        </div>
-
-    </div>
-
-</body>
-</html>
+  <head>
+    <script type="text/javascript" src="http://use.typekit.com/qtl6xkn.js"></script>
+    <script type="text/javascript">try{Typekit.load();}catch(e){}</script>
+    <link rel="alternate" type="application/rss+xml" title="strobe.cc" href="/feeds/content.xml" />
+    ${self.meta()}
+    <style type="text/css">
+      <%include file="style.css"/>
+      <%def name="css()"></%def>${self.css()}
+    </style>
+  </head>
+  <body>
+
+    <script type="text/javascript">
+      var _gaq = _gaq || [];
+      _gaq.push(['_setAccount', 'UA-9095438-3]);
+      _gaq.push(['_trackPageview']);
+
+      (function() {
+       var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+       ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+       (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(ga);
+       })();
+     </script>
+
+     <div class="topbar">
+       <div class="topleft">
+         <a href="/">strobe.cc</a>
+       </div>
+       <div class="topright">
+         <a href="/about/">about / source</a>
+       </div>
+     </div>
+
+     <div class="iwrap"><div class="bcen1"><div class="content">
+           ${self.body()}
+     </div></div></div>
+
+     <div class="footer">
+       <div class="fbar ftop"><div class="iwrap"><div class="bcen1">
+             <a class="ftop1l" href="/"><div class="ftop1 fhdr">strobe.cc</div></a>
+             <div class="w5 fl">
+               <div class="fhdr">I'm Steven Robertson.</div>
+               I write things for you and post them here.
+               I'm a hacker and musician who just wants to help out.
+             </div>
+             <div class="w6 fr">
+               <div class="fhdr">Current projects</div>
+               I'm researching a
+               <a href="/articles/fermi">new video codec</a>, maintaining
+               <a href="http://code.google.com/p/quodlibet/">Quod Libet</a>,
+               exploring CUDA devices and techniques, and
+               wrapping up at <a href="http://ucf.edu/">UCF</a>.
+             </div>
+
+       </div></div></div>
+
+       <div class="fbar fbot"><div class="iwrap"><div class="bcen1">
+             <div class="w5 fl">
+               <div class="fs9 fsi">
+                 Copyright 2009 by
+                 <span xmlns:dc="http://purl.org/dc/elements/1.1/" href="http://purl.org/dc/dcmitype/Text" rel="dc:type"></span>
+                 <a xmlns:cc="http://creativecommons.org/ns#" href="http://strobe.cc" property="cc:attributionName" rel="cc:attributionURL">Steven Robertson</a>.
+                 <br />
+                 <a rel="license" href="http://creativecommons.org/licenses/by/3.0/us/">CC Attribution 3.0 US</a>.
+                 <a xmlns:dc="http://purl.org/dc/elements/1.1/" href="http://strobe.cc" rel="dc:source"></a>
+                 <br />
+                 steven@strobe.cc / +1 (813) 728 7254
+               </div>
+             </div>
+             <div class="w6 fr">
+               <div class="fhdr">I can be your friend.</div>
+               <div class="fhdra">You should follow me on
+                 <a href="http://twitter.com/_srobertson/">Twitter.</a>
+               </div>
+               <div class="fhdr">You can be my boss.</div>
+               <div class="fhdra">I will be graduating soon. <a href="/articles/hire_me/">Make me yours.</a></div>
+               <br /><br />
+             </div>
+       </div></div></div>
+     </div>
+   </body>
+ </html>

@@ -91,8 +91,10 @@ class PygmentsFile(Pygments):
 
     def run(self):
         try:
-            with open(self.arguments[0]) as f:
-                return self._run([f.read()], self.arguments[1])
+            fobj = open(self.arguments[0])
+            contents = fobj.read()
+            fobj.close()
+            return self._run([contents], self.arguments[1])
         except IOError:
             print "Warning: error opening file %s." % (self.arguments[0],)
             return []

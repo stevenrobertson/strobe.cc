@@ -1,6 +1,42 @@
 ## -*- coding: utf-8 -*-
 <%inherit file="base.html" />
+<%def name="css()">
+/* homepage */
+div.big {
+    font-size: 350%;
+    line-height: 70%;
+    font-weight: 700;
+    color: #111;
+}
 
+div.article_list {
+    font-size: 140%;
+    padding: 0.5em 0;
+}
+
+div.article_list_entry {
+    padding-bottom: 0.5em;
+}
+
+span.article_list_number {
+    position: absolute;
+    left: -1.3em;
+    width: 0.5em;
+    text-align: right;
+}
+
+div.article_list a {
+    color: black;
+}
+
+/* I used to differentiate the TOC on the basis of article length */
+span.article_list_title_major {
+}
+
+span.article_list_title_minor {
+}
+
+</%def>
 <%def name="meta()">
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <meta name="author" content="Steven Robertson" />

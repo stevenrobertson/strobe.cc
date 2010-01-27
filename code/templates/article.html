@@ -1,13 +1,72 @@
 ## -*- coding: utf-8 -*-
 <%inherit file="base.html" />
-
 <%def name="meta()">
     ${doc['html']['meta']}
     <script type="text/javascript">
-        var disqus_developer = true;
+        var disqus_identifier = "${doc['path'].rstrip('/')}";
         var disqus_url = "http://strobe.cc/${doc['path']}";
         var disqus_title = "${doc['html']['title']}";
     </script>
+    <title>${doc['html']['title']}</title>
+</%def>
+
+<%def name="css()">
+div.abstract {
+    font-style: italic;
+    font-size: 110%;
+}
+
+div.docinfo_value a {font-style: italic;}
+
+div.docinfo {margin: 1em 0 2em;}
+
+div.docinfo_key {font-size: 110%;}
+
+div.contents p {
+    padding: 0;
+    margin: 1em 0 0 0;
+}
+
+div.contents a {color: black;}
+
+div.contents ul {
+    margin: 0;
+    list-style: none;
+}
+
+div.contents>ul{
+    -moz-padding-start: 0;
+    list-style: decimal;
+}
+
+div.contents li {margin: 0;}
+
+.comments {
+    margin: 3em 0;
+    padding: 1em;
+    border: 3px solid gray;
+}
+
+/* Pygments */
+table.highlighttable {
+    background: #f8f8f8;
+    width: 660px;
+    line-height: 100%;
+}
+
+table.highlighttable pre {
+    font-size: 80%;
+}
+
+div.linenodiv {
+    border-right: 1px solid #999;
+    padding-right: 0.15em;
+}
+
+div.linenodiv pre {
+    color: #666;
+}
+
 </%def>
 
 <a href="/${doc['path']}"><h1>${doc['html']['title']}</h1></a>
@@ -29,7 +88,11 @@ Not yet
     </div>
     <div class="w3 fl">
         <div class="docinfo_key">Edited</div>
-        <div class="docinfo_value">Need RCS integration</div>
+        <div class="docinfo_value">${doc['edited'].strftime('%d %b %Y')}
+% if doc['changelog']:
+<a href="/${doc['path']}history/">(history)</a>
+% endif
+        </div>
     </div>
     <div class="w5 fl">
         <div class="docinfo_key">Tagged</div>

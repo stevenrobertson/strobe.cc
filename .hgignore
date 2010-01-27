@@ -1,3 +1,5 @@
 syntax: glob
 *.html
 *.pyc
+*.swp
+*.xml
