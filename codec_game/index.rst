@@ -1,88 +1,91 @@
 The Codec Game
-Proposing a new method of assessing video quality based on human feedback.
+==============
 
+:Author: Steven Robertson
+:Contact: steven@strobe.cc
+:Published: 2009-11-12
+:Updated: 2009-12-30
+:Tags: Video, Algorithm, Article
+:Abstract:
+    Evaluating the quality of a video codec analytically is both a critical
+    part of the coding process and rather difficult to do. This might help.
 
+Image quality evaluation in video coding
+----------------------------------------
 
+Video coding makes use of image quality metrics in at least three distinct
+capacities.  The first happens during coding, where a simple metric like PSNR_
+or MSE_ will be used to estimate the loss in fidelity associated with the
+removal of image information from a video stream. These metrics often drive
+rate-distortion optimization techniques, which are designed to retain the most
+important pieces of information in a video stream, given a limit on the
+maximum number of bits that can be allocated to store such information. These
+techniques are usually chosen to be simpler, as optimizations against
+higher-order curves (or worse yet, truly nonlinear metrics) can be
+mathematically challenging and computationally intense.
 
+.. _PSNR: http://en.wikipedia.org/wiki/PSNR
+.. _MSE: http://en.wikipedia.org/wiki/Mean_squared_error
 
+More advanced metrics can be employed to provide post-compression feedback to
+the user (or automated system) performing the compression. This is
+particularly useful in real-time or batch processing, where visual
+verification of the total collection is impractical, although there may be a
+particular neurocognitive condition which compels users to obsessively watch
+the automated quality evaluation metrics while a video is coded [#]_.
 
+.. [#]  The same condition, perhaps, that draws geeks to watch the pieces
+        of a torrent slot into place, or the accurate but meaningless
+        visualizations of many cloud-computing projects like SETI@Home.
 
+Another use for video quality metrics, and the one we'll be considering most
+particularly here, is in providing feedback for optimization of the video
+coding process as a whole, including both video coding researchers and
+individuals performing video coding. In this capacity, the entire video is
+considered, both as a collection of individual frames and as a whole entity,
+and is assessed on an apparently simple but analytically quite complex
+question: "How good is it?"
 
+Feedback from our viewers
+-------------------------
 
+Let us assume for a moment that we have an _oracle_ that can reliably,
+consistently, and accurately answer the question above for any video sample we
+throw at it. What do we do with it?
 
+Aside from the poor souls who measure their self-worth via the quality of
+their home entertainment systems, this oracle would be useful to two major
+classes of people: those who are using coding systems to encode video samples,
+and those who are developing the coding systems.
 
+The first group of individuals have a set of videos they would like to encode.
+The goal is to identify a combination of parameters that produces either the
+highest-quality encoded video at a particular bitrate, or the lowest-bitrate
+encoded video for a particular quality. We refer to the set of possibilities
+for encoder settings as a *parameter space*; a particular combination of
+parameters describes a point within the parameter space, in much the same way
+that a set of coordinates ``(x, y, z)`` describes a point in three-dimensional
+space. The goal can then be expressed as wanting to find the best point(s) in
+the parameter space, given a particular video and constraints on bitrate or
+video quality.
 
+Several approaches exist to search parameter spaces like this for
+optimization, such as Monte Carlo methods, genetic algorithms, and even
+Lagrangian optimization (given certain well-defined aspects of the parameter
+space). However, it is important to consider that most users will only have a
+finite amount of time; the parameter space is incredibly large, and may not be
+searchable exhaustively, especially given bounds on the computational
+resources and the capacity of the oracle. Thus, the user is tasked with
+determining a *representative sample* of videos, and running such
+optimizations on that sample, in order to generalize the results and find an
+optimal set of parameters for a particular class of videos [#]_.
 
+.. [#]  Of course, the user usually just wants to rip the DVDs they rented
+        from Netflix, so this kind of optimization falls to the developer
+        anyway, to be exposed to the user in the form of encoder presets.
+        The distinction between *user* and *developer* here isn't that they
+        be separate people, but rather that the user can't tweak the coder's
+        internals.
 
-
-
-
-
-
-
-
-
-
-
-Perceptual coding is tricky business. One of the challenging aspects of
-designing a lossy video (or audio) codec is determining how good it is.
-Mathematical quality evaluation metrics such as PSNR or MSE exist for images,
-but do not map directly to _human_ assessments of quality; for instance, PSNR
-often "prefers" coded images that are less crisp when the source image
-contains sharp anisotropic 1-D discontinuities, such as object outlines in
-animation. [image 1] Of course, if we can't get a mathematical model of a
-human, we can at least get a human to rate things manually, no?
-
-Well, no; not directly, at least. Present two video clips, images, or audio
-segments to a human, each of which has been noticeably distorted by
-compression, but both by different compression schemes. Ask the human to
-indicate which of the two is better, and if you're enormously fortunate you
-_might_ get a statistically significant preference. Ask the human to
-characterize the _degree_ by which one image is better than the other, and hoo
-boy you have a mess on your hands.
-
-[image 2: "On a scale of one to five, how satisfied are you with this coding
-technique?"]
-
-When considering the quagmire of human visual quality assessment, it's
-encouraging to reflect on the audio community's success in this department.
-Audio researchers have a statistical tool which can be used to compare two
-samples: the "ABX test":http://en.wikipedia.org/wiki/ABX_test. It's a
-self-contained double-blind experiment that can easily be self-administered.
-In an ABX test, the user is given two controls, labeled A and B, that each
-play a different sample[1]. At the start of a trial, a third control, X, is
-randomly configured to play either A or B. The user's task is to identify X as
-either A or B. If X can reliably be identified, there's a perceptible
-difference between A and B; if not, the two are essentially indistinguishable,
-and the user can save bits or dollars by choosing the technically inferior
-version.
-
-fn1. Audio coding researchers usually use compressed and uncompressed versions
-of the same sound sample as A and B; audiophiles might place a $500 amplifier
-next to a $10,000 one.
-
-The ABX test is well-loved because it is simple to administer, easy to
-interpret statistically, and quite decisive. But it's also fundamentally
-limited. The question it asks—"Can you tell the difference?"—is a yes-or-no
-proposition, and as much as you might want to, there's no easy way to extract
-any other information out of an experimental run, such as "How large is the
-difference?" On its surface, this makes the test nearly useless for video
-applications. It is trivial to exceed the sensitivity of the human auditory
-system with lossy-coded material at a low bitrate (relative to video); as a
-result, it is often practical to store and distribute versions of audio
-samples that are indistinguisable from the original content. Video, on the
-other hand, requires a far larger amount of data to attain perfect
-reconstruction. As a result, nearly all video distributed today would easily
-fail in a side-by-side comparison, if the user was familiar with the visual
-hallmarks of digital video compression. So if the answer's always going to be
-yes, why bother asking?
-
-What we need is a way to do the same test with a different question.
-
-h3. Rate-distortion optimization
-
-A significant amount of video coding is deciding what to keep and what to
-throw away. Keeping details in an image inevitably requires more bits, as the
-information about the details has to be stored somehow. But the number of bits
-each detail will take to transmit, and the degree to which that detail's
-presence or absence will affect 
+Codec developers face much the same problem—except on an infinitely larger
+scale.

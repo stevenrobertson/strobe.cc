@@ -220,8 +220,11 @@ class SiteProcessor:
                 date = max(article['published'], max(article['updated']))
             html = self._clean_html(article, mathml=False)
             articles.append((date, updated, article, html))
+        articles.sort()
         tmpl = self.template_lookup.get_template("feed.xml")
         out = tmpl.render_unicode(articles=articles)
+        if not os.path.isdir(os.path.join(self.root, 'feeds')):
+            os.mkdir(os.path.join(self.root, 'feeds'))
         fobj = open(os.path.join(self.root, 'feeds/content.xml'), 'w')
         fobj.write(BeautifulSoup(out).prettify())
         fobj.close()
