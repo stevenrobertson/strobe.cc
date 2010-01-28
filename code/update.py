@@ -34,6 +34,14 @@ class SiteProcessor:
         self.tools = {}
         self.published = []
 
+    def _write(self, template_name, path, *args, **kwargs):
+        tmpl = self.template_lookup.get_template(template_name)
+        out = tmpl.render_unicode(*args, **kwargs)
+        fobj = open(path, 'w')
+        fobj.write(self._prettify(out))
+        fobj.close()
+
+
     def _has_tool(self, tool):
         """Checks if a given tool is available on the system path."""
         if tool in self.tools:
@@ -63,6 +71,9 @@ class SiteProcessor:
 
     def _prettify(self, html):
         """Prettifies HTML without touching 'pre' elements."""
+        # tidying does too much damage to whitespace. i'll pass.
+        return html.encode('utf-8')
+
         soup = BeautifulSoup(html)
         prettysoup = BeautifulSoup(soup.prettify().decode('utf-8'))
         for (pre, mangled) in zip(soup.findAll('pre'),
@@ -119,26 +130,14 @@ class SiteProcessor:
             map(lambda img: absolve(img, 'src'),
                 bodysoup.findAll('img', {'src': True}))
 
-        cleaned_body = unicode(bodysoup)
+        body = unicode(bodysoup).encode('utf-8')
         if mathml and 'MathML' in doc.get('tags', ''):
             # Gotta process through itex2MML. oh, and screw you, WebKit
-            cleaned_body = self._run_tool(['itex2MML'], cleaned_body)
-        return cleaned_body
-
-    def _write_doc(self, doc, path):
-        """Writes a document to the filesystem as HTML."""
-        # set the document permalink path, using a solid guess
-        relpath = os.path.join(self.root, path)[len(self.root)+1:]
-        if relpath.endswith('index.html'):
-            relpath = relpath[:-10]
-        doc['path'] = relpath
-
-        tmpl = self.template_lookup.get_template("article.html")
-        cleaned = self._clean_html(doc)
-        out = tmpl.render_unicode(doc=doc, cleaned_body=cleaned)
-        fobj = open(path, 'w')
-        fobj.write(self._prettify(out))
-        fobj.close()
+            body = self._run_tool(['itex2MML'], body)
+        body = self._run_tool(
+                ['perl', os.path.join(self.root, 'code/SmartyPants.pl')],
+                body)
+        return body
 
     def _get_changelog(self, path):
         """Grabs the changelog of a path, as a list of dicts.
@@ -168,11 +167,7 @@ class SiteProcessor:
         hist = os.path.join(os.path.dirname(path), 'history')
         if not os.path.isdir(hist):
             os.mkdir(hist)
-        tmpl = self.template_lookup.get_template("history.html")
-        out = tmpl.render_unicode(doc=doc)
-        fobj = open(os.path.join(hist, 'index.html'), 'w')
-        fobj.write(self._prettify(out))
-        fobj.close()
+        self._write("history.html", os.path.join(hist, 'index.html'), doc=doc)
 
     def _process_doc(self, path):
         """Processes a reStructuredText document. Writes the processed
@@ -182,12 +177,20 @@ class SiteProcessor:
         contents = fobj.read()
         fobj.close()
 
+        # let ReST includes use relative paths when processing
         olddir = os.getcwd()
         os.chdir(os.path.dirname(path))
         docinfo = docutils.core.publish_doctree(contents).children[1]
         html = docutils.core.publish_parts(contents, writer_name='html')
         os.chdir(olddir)
-        doc = {}
+        dirname = os.path.split(os.path.join(self.root, path))[0]
+
+        doc =   {
+                'html': html,
+                'path': dirname[len(self.root)+1:],
+                }
+
+        # process docinfo (variables at start of article)
         if docinfo.tagname == 'docinfo':
             for child in docinfo.children:
                 if child.tagname == 'field':
@@ -203,26 +206,27 @@ class SiteProcessor:
             doc['published'] = todate(doc['published'])
         if 'updated' in doc:
             doc['updated'] = map(todate, doc['updated'].split(','))
+
         doc['changelog'] = changelog = self._get_changelog(path)
         if changelog:
             doc['edited'] = changelog[-1]['date']
         else:
             doc['edited'] = datetime.fromtimestamp(os.path.getmtime(path))
-        doc['html'] = html
-        self._write_doc(doc, path[:-4] + '.html')
+
+        body = self._clean_html(doc)
+        outpath = os.path.join(dirname, 'index.html')
+        self._write("article.html", outpath, doc=doc, body=body)
+
         if 'published' in doc:
             self.published.append(doc)
-        if changelog and path.endswith('index.rst'):
+        if changelog:
             self._write_history(doc, path)
 
     def _build_index(self):
         """Rebuilds the site index from the stored article list."""
+        path = os.path.join(self.root, 'index.html')
         self.published.sort(key=lambda doc: doc['published'])
-        tmpl = self.template_lookup.get_template("home.html")
-        out = tmpl.render_unicode(article_list=self.published)
-        fobj = open(os.path.join(self.root, 'index.html'), 'w')
-        fobj.write(self._prettify(out))
-        fobj.close()
+        self._write('home.html', path, article_list=self.published)
 
     def _build_feed(self):
         articles = []
@@ -234,25 +238,56 @@ class SiteProcessor:
             html = self._clean_html(article, mathml=False, absolutize=True)
             articles.append((date, updated, article, html))
         articles.sort()
-        tmpl = self.template_lookup.get_template("feed.xml")
-        out = tmpl.render_unicode(articles=articles)
+
         if not os.path.isdir(os.path.join(self.root, 'feeds')):
             os.mkdir(os.path.join(self.root, 'feeds'))
-        fobj = open(os.path.join(self.root, 'feeds/content.xml'), 'w')
-        fobj.write(BeautifulSoup(out).prettify())
-        fobj.close()
+        path = os.path.join(self.root, 'feeds/content.xml')
+        self._write("feed.xml", path, articles=articles)
 
     def process_dir(self):
         for root, dirs, files in os.walk(self.root):
+            parent = os.path.split(root)[1]
             for file in files:
-                if file.endswith('.rst'):
+                # Only accept 'foo/foo.rst'
+                if file.endswith('.rst') and file[:-4] == parent:
                     print "Processing " + os.path.join(root, file)
                     self._process_doc(os.path.join(root, file))
         self._build_index()
         self._build_feed()
 
+def watch(root):
+    import pyinotify
+    import time
+    wm = pyinotify.WatchManager()
+    mask = pyinotify.IN_CREATE | pyinotify.IN_MODIFY
+    class HandleEvents(pyinotify.ProcessEvent):
+        def __init__(self, root):
+            super(HandleEvents, self).__init__()
+            self.root = root
+            self.timeout = time.time()
+            self.process_IN_CREATE = self.process_IN_MODIFY = self.process
+        def process(self, event):
+            exts = ['.html', '.py', '.rst']
+            if not filter(lambda e: event.name.endswith(e), exts):
+                return
+            if self.timeout + 10 < time.time():
+                try:
+                    if event.name.endswith('.py'):
+                        subprocess.check_call(sys.argv)
+                        sys.exit()
+                    else:
+                        SiteProcessor(self.root).process_dir()
+                except:
+                    pass
+                self.timeout = time.time()
+    notifier = pyinotify.Notifier(wm, HandleEvents(root))
+    wdd = wm.add_watch(root, mask, rec=True)
+    notifier.loop()
+
 if __name__ == "__main__":
     root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     sp = SiteProcessor(root)
     sp.process_dir()
+    if 'watch' in sys.argv:
+        watch(root)
 

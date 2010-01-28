@@ -16,7 +16,9 @@ Dear Typekit,
 
 Your service is currently broken. The good news: it's a one-line fix.
 
-The JavaScript generated for each client includes the folowing regex against ``navigator.userAgent``, intended to check whether or not the browser is compatible with @font-face and Typekit: 
+The JavaScript generated for each client includes the folowing regex against
+``navigator.userAgent``, intended to check whether or not the browser is
+compatible with @font-face and Typekit: 
 
 .. code:: javascript
 
@@ -28,7 +30,14 @@ The JavaScript generated for each client includes the folowing regex against ``n
         }
     }
 
-The problem is that many Linux distributors `can't legally call their browser Mozilla Firefox`_. The Debian project is a notable example; they've rebranded their Firefox build "Iceweasel", and chosen similar names for other Mozilla software. To avoid this dispute, other distributions have taken to using the code-name for a particular Firefox build as the name—I'm currently posting this from a browser called "Shiretoko". This doesn't even cover contexts in which the Gecko engine is embedded by other applications which fully support TypeKit, such as Mozilla SeaMonkey.
+The problem is that many Linux distributors `can't legally call their browser
+Mozilla Firefox`_. The Debian project is a notable example; they've rebranded
+their Firefox build "Iceweasel", and chosen similar names for other Mozilla
+software. To avoid this dispute, other distributions have taken to using the
+code-name for a particular Firefox build as the name—I'm currently posting this
+from a browser called "Shiretoko". This doesn't even cover contexts in which
+the Gecko engine is embedded by other applications which fully support TypeKit,
+such as Mozilla SeaMonkey.
 
 .. _can't legally call their browser Mozilla Firefox:
     http://en.wikipedia.org/wiki/Mozilla_Corporation_software_rebranded_by_the_Debian_project#Origins_of_the_issue_and_of_the_Iceweasel_name

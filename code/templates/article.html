@@ -3,8 +3,8 @@
 <%def name="meta()">
     ${doc['html']['meta']}
     <script type="text/javascript">
-        var disqus_identifier = "${doc['path'].rstrip('/')}";
-        var disqus_url = "http://strobe.cc/${doc['path']}";
+        var disqus_identifier = "${doc['path']}";
+        var disqus_url = "http://strobe.cc/${doc['path']}/";
         var disqus_title = "${doc['html']['title']}";
     </script>
     <title>${doc['html']['title']}</title>
@@ -21,6 +21,10 @@ div.docinfo_value a {font-style: italic;}
 div.docinfo {margin: 1em 0 2em;}
 
 div.docinfo_key {font-size: 110%;}
+
+div.contents {
+    margin: 0 0 3em 0;
+}
 
 div.contents p {
     padding: 0;
@@ -69,7 +73,7 @@ div.linenodiv pre {
 
 </%def>
 
-<a href="/${doc['path']}"><h1>${doc['html']['title']}</h1></a>
+<a href="/${doc['path']}/"><h1>${doc['html']['title']}</h1></a>
 % if 'abstract' in doc:
 <div class="abstract">${doc['abstract']}</div>
 % endif
@@ -90,7 +94,7 @@ Not yet
         <div class="docinfo_key">Edited</div>
         <div class="docinfo_value">${doc['edited'].strftime('%d %b %Y')}
 % if doc['changelog']:
-<a href="/${doc['path']}history/">(history)</a>
+<a href="/${doc['path']}/history/">(history)</a>
 % endif
         </div>
     </div>
@@ -108,8 +112,10 @@ No tags
 </div>
 % endif
 <div class="article_body">
-    ${cleaned_body}
+    ${body}
 </div>
+
+<a href="/${doc['path']}/${doc['path']}.rst" style="font-size: 90%;">Article source.</a>
 
 <div class="comments" id="disqus_thread"></div>
 <script type="text/javascript" src="http://disqus.com/forums/strobecc/embed.js"></script><noscript><a href="http://disqus.com/forums/strobecc/?url=ref">View the discussion thread.</a></noscript>
