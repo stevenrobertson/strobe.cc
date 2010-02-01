@@ -12,6 +12,15 @@ Dear Typekit...
 
 .. _Typekit: http://typekit.com/
 
+**Update**: Typekit has done one better, not only using Gecko browser
+detection but also `using WOFF for Firefox 3.6 and up`_. Took a few months,
+but they got it done the right way.
+
+.. _using WOFF for Firefox 3.6 and up:
+    http://blog.typekit.com/2010/01/21/typekit-supports-woff-in-firefox-3-6/
+
+----
+
 Dear Typekit,
 
 Your service is currently broken. The good news: it's a one-line fix.
