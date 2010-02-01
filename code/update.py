@@ -9,6 +9,7 @@
 import os
 import sys
 import subprocess
+import traceback
 from datetime import date, datetime
 
 try:
@@ -116,7 +117,7 @@ class SiteProcessor:
             newfn.insert(0, ' ')
             anchr = link.find('a')
             newanchr = Tag(bodysoup, 'a', anchr.attrs)
-            newanchr.insert(0, anchr.getText().strip('[]'))
+            newanchr.insert(0, unicode(anchr.find(text=True)).strip('[]'))
             newfn.insert(0, newanchr)
             fn.replaceWith(fnwrap)
 
@@ -124,7 +125,7 @@ class SiteProcessor:
                 attrs={'class': 'footnote-reference'}):
             sup = Tag(bodysoup, 'sup')
             newanchr = Tag(bodysoup, 'a', anchr.attrs)
-            newanchr.insert(0, anchr.getText().strip('[]'))
+            newanchr.insert(0, unicode(anchr.find(text=True)).strip('[]'))
             sup.insert(0, newanchr)
             anchr.replaceWith(sup)
 
@@ -278,7 +279,8 @@ class SiteProcessor:
                     print "Processing " + os.path.join(root, file)
                     try:
                         self._process_doc(os.path.join(root, file))
-                    except:
+                    except BaseException, e:
+                        traceback.print_exc(e)
                         print "Warning: exception processing", file
         self._build_index()
         self._build_feed()
