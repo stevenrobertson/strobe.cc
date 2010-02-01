@@ -4,7 +4,7 @@ Quodlibot, a Google Code IRC bot
 :Author: Steven Robertson
 :Contact: steven@strobe.cc
 :Published: 2009-12-26
-:Tags: Web
+:Tags: Article, Web
 
 I was looking for a simple IRC bot which would announce changes to the `Quod
 Libet`_ project, like what CIA_ does for version control. Finding none, I

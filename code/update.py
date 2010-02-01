@@ -21,13 +21,14 @@ try:
     from mako.lookup import TemplateLookup
     from BeautifulSoup import BeautifulSoup, Tag
     from mercurial import cmdutil, ui, hg
+    from mercurial.error import Abort, LookupError
 except ImportError:
     print "Import error. Check dependencies."
     sys.exit(0)
 
 class SiteProcessor:
     def __init__(self, root):
-        self.root = root
+        self.root = os.path.abspath(root)
         self.template_lookup = TemplateLookup(
                 directories=[os.path.join(root, 'code/templates')],
                 output_encoding='utf-8', default_filters=['decode.utf8'])
@@ -41,6 +42,9 @@ class SiteProcessor:
         fobj.write(self._prettify(out))
         fobj.close()
 
+    def _relpath(self, path):
+        path = os.path.abspath(os.path.join(self.root, path))
+        return path[len(self.root)+1:]
 
     def _has_tool(self, tool):
         """Checks if a given tool is available on the system path."""
@@ -110,8 +114,19 @@ class SiteProcessor:
             fnwrap.insert(0, newfn)
             map(lambda e: newfn.insert(0, e), reversed(text.contents))
             newfn.insert(0, ' ')
-            newfn.insert(0, link.find('a'))
+            anchr = link.find('a')
+            newanchr = Tag(bodysoup, 'a', anchr.attrs)
+            newanchr.insert(0, anchr.getText().strip('[]'))
+            newfn.insert(0, newanchr)
             fn.replaceWith(fnwrap)
+
+        for anchr in bodysoup.findAll('a',
+                attrs={'class': 'footnote-reference'}):
+            sup = Tag(bodysoup, 'sup')
+            newanchr = Tag(bodysoup, 'a', anchr.attrs)
+            newanchr.insert(0, anchr.getText().strip('[]'))
+            sup.insert(0, newanchr)
+            anchr.replaceWith(sup)
 
         # fix some crazy Pygments nonsense
         for pre in bodysoup.findAll('pre', {'style': "line-height: 125%"}):
@@ -145,20 +160,30 @@ class SiteProcessor:
         repo = hg.repository(ui.ui(), self.root)
         if os.path.isfile(path):
             path = os.path.dirname(path)
-        paths = []
-        for root, dirs, files in os.walk(path):
-            map(lambda fn: paths.append(os.path.join(root, fn)), files)
+        match = cmdutil.match(repo, ['re:^' + self._relpath(path)], {})
+        paths = repo.walk(match)
         match = cmdutil.match(repo, paths, {})
         def prep(ctx, fns):
             pass
-        res = []
-        for ctx in cmdutil.walkchangerevs(repo, match, {'rev': ''}, prep):
-            id = ''.join(map(lambda chr: '%x' % ord(chr), ctx.node()))
-            res.append({
-                'id': id,
+        opts = {'rev': '', 'follow': True}
+
+        handle_ctx = lambda ctx: {
+                'id': ''.join(map(lambda chr: '%x' % ord(chr), ctx.node())),
                 'date': datetime.fromtimestamp(ctx.date()[0]),
-                'comment': ctx.description()
-            })
+                'comment': docutils.core.publish_parts(
+                            ctx.description(), writer_name='html')['body']
+            }
+        try:
+            res = map(handle_ctx,
+                      cmdutil.walkchangerevs(repo, match, opts, prep))
+        except Abort, LookupError:
+            # Following a context can fail esp. if mq is being used
+            try:
+                opts.pop('follow')
+                res = map(handle_ctx,
+                          cmdutil.walkchangerevs(repo, match, opts, prep))
+            except Abort:
+                return []
         res.sort(key = lambda c: c['date'])
         return res
 
@@ -217,7 +242,7 @@ class SiteProcessor:
         outpath = os.path.join(dirname, 'index.html')
         self._write("article.html", outpath, doc=doc, body=body)
 
-        if 'published' in doc:
+        if 'published' in doc and 'Article' in doc.get('tags', ''):
             self.published.append(doc)
         if changelog:
             self._write_history(doc, path)
@@ -286,6 +311,7 @@ def watch(root):
 
 if __name__ == "__main__":
     root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    os.chdir(root)
     sp = SiteProcessor(root)
     sp.process_dir()
     if 'watch' in sys.argv:

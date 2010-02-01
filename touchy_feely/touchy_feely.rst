@@ -4,7 +4,7 @@ Touchy-Feely: a TouchBook teardown
 :Author: Steven Robertson
 :Contact: steven@strobe.cc
 :Published: 2009-09-23
-:Tags: Hardware
+:Tags: Article, Hardware
 
 The `Always Innovating  TouchBook`_ is a touch-sensitive tablet/netbook
 device, powered by an TI OMAP-3530 processor and running Linux. They're
