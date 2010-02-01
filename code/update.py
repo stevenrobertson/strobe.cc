@@ -276,7 +276,10 @@ class SiteProcessor:
                 # Only accept 'foo/foo.rst'
                 if file.endswith('.rst') and file[:-4] == parent:
                     print "Processing " + os.path.join(root, file)
-                    self._process_doc(os.path.join(root, file))
+                    try:
+                        self._process_doc(os.path.join(root, file))
+                    except:
+                        print "Warning: exception processing", file
         self._build_index()
         self._build_feed()
 
