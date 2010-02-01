@@ -16,7 +16,7 @@ img {border: none;}
 
 /* all fonts, for ease of screwing around with typekit */
 body {font-family: "skolar-1", "skolar-2", "Georgia", serif;}
-div.topbar, .footnote, div.big, div.fhdr {
+div.topbar, .footnote, .footnote-reference, div.big, div.fhdr {
     font-family: "mentone-1", "mentone-2", sans-serif;
 }
 

@@ -32,7 +32,7 @@ checking out the source repository:</p>
 <p>See the <a href="/about/">about page</a> for more information.</p>
 
 <div class="changelog">
-% for rev in doc['changelog']:
+% for rev in reversed(doc['changelog']):
 <h3>Revision ${rev['id'][:10]}&mdash;${rev['date'].strftime('%d %b %Y')}</h3>
 <p>${rev['comment']}</p>
 % endfor
