@@ -90,7 +90,7 @@ the docinfo section of each document's ReStructuredText source).
 .. _RSS feed: /feeds/content.xml
 
 The HTML and CSS aims to be as standards-compliant as possible, although I've
-mostly been testing in Firefox 3.6 on Linux. In particular, MathML just
-flat-out won't display in WebKit-based browsers, and if anyone knows a better
-way to do margin note positioning with pure CSS, I'd love to hear it.
+mostly been testing in Firefox 3.6 on Linux. I also occasionally use MathML in
+my articles, which WebKit-based browsers don't touch, but I might write a
+fallback system some time.
 

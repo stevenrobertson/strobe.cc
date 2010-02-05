@@ -121,6 +121,24 @@ No tags
   <a href="/${doc['path']}/${doc['path']}.rst">Article source.</a>
 </div>
 
+<script type="text/javascript">
+  // reposition footnotes
+  window.onload = function() {
+    var divs = document.getElementsByTagName('div');
+    for (var i = 0; i < divs.length; i++) {
+      try {
+        if (divs[i].className == "fnwrap") {
+          var footnote = divs[i].getElementsByTagName("p")[0];
+          var target = document.getElementById(footnote.id + "_target");
+          footnote = footnote.parentNode.removeChild(footnote);
+          target.appendChild(footnote);
+        }
+      } catch (e) {}
+    }
+  }
+</script>
+
+
 % if 'published' in doc and 'article' in doc.get('tags', ''):
 <div class="comments" id="disqus_thread"></div>
 <script type="text/javascript" src="http://disqus.com/forums/strobecc/embed.js"></script><noscript><a href="http://disqus.com/forums/strobecc/?url=ref">View the discussion thread.</a></noscript>

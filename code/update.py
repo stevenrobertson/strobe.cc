@@ -111,7 +111,8 @@ class SiteProcessor:
             except:
                 continue
             fnwrap = Tag(bodysoup, 'div', [('class', 'fnwrap')])
-            newfn = Tag(bodysoup, 'p', [('class', 'footnote')])
+            newfn = Tag(bodysoup, 'p',
+                        [('class', 'footnote'), ('id', fn['id'])])
             fnwrap.insert(0, newfn)
             map(lambda e: newfn.insert(0, e), reversed(text.contents))
             newfn.insert(0, ' ')
@@ -123,11 +124,20 @@ class SiteProcessor:
 
         for anchr in bodysoup.findAll('a',
                 attrs={'class': 'footnote-reference'}):
+            # reformat footnote links
             sup = Tag(bodysoup, 'sup')
             newanchr = Tag(bodysoup, 'a', anchr.attrs)
             newanchr.insert(0, unicode(anchr.find(text=True)).strip('[]'))
             sup.insert(0, newanchr)
             anchr.replaceWith(sup)
+            # append empty span for use by footnote javascript
+            id =  newanchr['href'][1:] + '_target'
+            span = Tag(bodysoup, 'span', [('class', 'fntarget'), ('id', id)])
+            parent = sup.findParent()
+            for idx, chld in enumerate(parent.contents):
+                if chld is sup:
+                    parent.insert(idx+1, span)
+                    break
 
         # fix some crazy Pygments nonsense
         for pre in bodysoup.findAll('pre', {'style': "line-height: 125%"}):

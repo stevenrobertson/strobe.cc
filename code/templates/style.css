@@ -33,8 +33,8 @@ pre {line-height: normal;}
 
 /* page basics, grid layout. */
 .iwrap {
-    padding-left: 180px;
-    margin-right: 180px;
+    padding-left: 205px;
+    margin-right: 205px;
 }
 
 .fwrap {
@@ -49,13 +49,13 @@ pre {line-height: normal;}
 }
 
 .fcen1 {
-    width: 840px;
+    width: 900px;
     margin: auto;
     padding: 0px;
 }
 
 .fcen2 {
-    width: 840px;
+    width: 900px;
     margin-left: -90px;
 }
 
@@ -142,15 +142,32 @@ div.fnwrap {
     position: relative;
 }
 
+span.fntarget {
+    position: absolute;
+    left: 0;
+}
+
 .footnote {
+    color: #333;
     line-height: 110%;
     font-size: 80%;
     position: absolute;
-    left: -180px;
-    top: -45px;
-    width: 160px;
-    padding-right: 10px;
+    left: -205px;
+    width: 190px;
+    padding-right: 15px;
     text-align: right;
+}
+
+.footnote-reference {
+    font-size: 90%;
+}
+
+div.fnwrap .footnote {
+    top: -45px;
+}
+
+span.fntarget .footnote {
+    margin: 0;
 }
 
 /* all footer stuff */
@@ -167,7 +184,7 @@ div.footer>div>div>div>div a {
 
 div.fbar {
     width: 100%;
-    min-width: 860px;
+    min-width: 900px;
     padding: 10px 0;
     color: white;
     margin: 0;
