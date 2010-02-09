@@ -15,13 +15,13 @@ body, h1, h2, h3, h4, h5, blockquote, pre, code, cite, a {
 img {border: none;}
 
 /* all fonts, for ease of screwing around with typekit */
-body {font-family: "skolar-1", "skolar-2", "Georgia", serif;}
+body {font-family: "skolar-1", "skolar-2", "Skolar", "Georgia", serif;}
 div.topbar, .footnote, .footnote-reference, div.big, div.fhdr {
-    font-family: "mentone-1", "mentone-2", sans-serif;
+    font-family: "mentone-1", "mentone-2", "Mentone", sans-serif;
 }
 
 div.docinfo_key, div.contents p, h2, h3, .smallcaps {
-    font-family: "ff-meta-sc-web-pro-1", "ff-meta-sc-web-pro-2";
+    font-family: "ff-meta-sc-web-pro-1", "ff-meta-sc-web-pro-2", "MetaPlusNormal-Caps", sans-serif;
     text-transform: lowercase;
 }
 
