@@ -217,13 +217,13 @@ class SiteProcessor:
         try:
             res = map(handle_ctx,
                       cmdutil.walkchangerevs(repo, match, opts, prep))
-        except Abort, LookupError:
+        except (Abort, LookupError), e:
             # Following a context can fail esp. if mq is being used
             try:
                 opts.pop('follow')
                 res = map(handle_ctx,
                           cmdutil.walkchangerevs(repo, match, opts, prep))
-            except Abort:
+            except Abort, e:
                 return []
         res.sort(key = lambda c: c['date'])
         return res
@@ -249,6 +249,7 @@ class SiteProcessor:
         docinfo = docutils.core.publish_doctree(contents).children[1]
         html = docutils.core.publish_parts(contents, writer_name='html')
         dirname = os.path.split(os.path.join(self.root, path))[0]
+        os.chdir(olddir)
 
         doc =   {
                 'html': html,
@@ -288,10 +289,9 @@ class SiteProcessor:
             self._write_history(doc, path)
 
         # pdf time, whooo
-        if ('Article' not in doc.get('tags', '') or
-            not self._has_tool('xelatex')):
-            os.chdir(olddir)
+        if not self._has_tool('xelatex'):
             return
+        os.chdir(os.path.join(root, doc['path']))
         pdf_path = os.path.join(self.root, path[:-4] + '.pdf')
         pdf_mtime = (os.path.isfile(pdf_path) and
                      os.path.getmtime(pdf_path)) or 0
