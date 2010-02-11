@@ -68,14 +68,19 @@ class SiteProcessor:
         """Runs the tool ('tool' is a *list*), piping in 'in' and
         returning 'out'."""
         if self._has_tool(tool[0]):
+            # Popen.communicate appears broken in this environment, so, ugly
             null = open('/dev/null', 'w')
             subp = subprocess.Popen(tool,
                                     stdin=subprocess.PIPE,
                                     stdout=subprocess.PIPE,
                                     stderr=null)
-            (stdout, stderr) = subp.communicate(input)
+            subp.stdin.write(input)
+            subp.stdin.close()
+            subp.wait()
             null.close()
-            return stdout
+            out = subp.stdout.read()
+            subp.stdout.close()
+            return out
         else:
             return input
 
@@ -153,9 +158,9 @@ class SiteProcessor:
             text = ''.join(map(unicode, math.contents))
             map(lambda c: c.extract(), math.contents)
             name = '.eqn%s.gif' % md5(text).hexdigest()
-            path = os.path.join(self.root, doc['path'], name)
-            if not os.path.isfile(path):
-                subprocess.check_call(['mathtex', text, '-o', path[:-4]])
+            imgpath = os.path.join(self.root, doc['path'], name)
+            if not os.path.isfile(imgpath):
+                self._run_tool(['mathtex', text, '-o', imgpath[:-4]], '')
             attrs = {'src': name, 'alt': '(equation)', 'class': 'eqn'}
             img = Tag(bodysoup, 'img', attrs.items())
             math.insert(0, img)
