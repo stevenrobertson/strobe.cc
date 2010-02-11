@@ -41,14 +41,16 @@
 # Set to True if you want inline CSS styles instead of classes
 INLINESTYLES = True
 
-from pygments.formatters import HtmlFormatter
+from pygments.formatters import HtmlFormatter, LatexFormatter
 
 # The default formatter
-DEFAULT = HtmlFormatter(noclasses=INLINESTYLES, linenos=True)
+DEFAULT = (HtmlFormatter(noclasses=INLINESTYLES, linenos=True),
+           LatexFormatter(linenos=True))
 
 # Add name -> formatter pairs for every variant you want to use
 VARIANTS = {
-    'nolinenos': HtmlFormatter(noclasses=INLINESTYLES, linenos=False),
+    'nolinenos': (HtmlFormatter(noclasses=INLINESTYLES, linenos=False),
+                  LatexFormatter(linenos=True)),
 }
 
 
@@ -75,10 +77,13 @@ class Pygments(Directive):
             lexer = TextLexer()
         # take an arbitrary option if more than one is given
         formatter = self.options and VARIANTS[self.options.keys()[0]] or DEFAULT
-        parsed = highlight(u'\n'.join(content), lexer, formatter)
+        html = highlight(u'\n'.join(content), lexer, formatter[0])
         # hang the indents for strobe.cc
-        parsed = '<div class="blockcode">%s</div>' % parsed
-        return [nodes.raw('', parsed, format='html')]
+        html = '<div class="blockcode">%s</div>' % html
+        latex = formatter[1].get_style_defs() + \
+                highlight(u'\n'.join(content), lexer, formatter[1])
+        return [nodes.raw('', html, format='html'),
+                nodes.raw('', latex, format='latex')]
 
     def run(self):
         self.assert_has_content()

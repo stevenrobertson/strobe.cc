@@ -17,6 +17,7 @@ from hashlib import md5
 
 try:
     import docutils.core
+    import docutils.io
     import docutils.nodes
     from docutils.transforms.frontmatter import DocTitle
     from docutils.parsers.rst import directives
@@ -69,7 +70,10 @@ class SiteProcessor:
         returning 'out'."""
         if self._has_tool(tool[0]):
             # Popen.communicate appears broken in this environment, so, ugly
-            null = open('/dev/null', 'w')
+            if 'debug' in sys.argv:
+                null = None
+            else:
+                null = open('/dev/null', 'w')
             subp = subprocess.Popen(tool,
                                     stdin=subprocess.PIPE,
                                     stdout=subprocess.PIPE,
@@ -77,7 +81,8 @@ class SiteProcessor:
             subp.stdin.write(input)
             subp.stdin.close()
             subp.wait()
-            null.close()
+            if null:
+                null.close()
             out = subp.stdout.read()
             subp.stdout.close()
             return out
@@ -243,7 +248,6 @@ class SiteProcessor:
         os.chdir(os.path.dirname(path))
         docinfo = docutils.core.publish_doctree(contents).children[1]
         html = docutils.core.publish_parts(contents, writer_name='html')
-        os.chdir(olddir)
         dirname = os.path.split(os.path.join(self.root, path))[0]
 
         doc =   {
@@ -286,6 +290,7 @@ class SiteProcessor:
         # pdf time, whooo
         if ('Article' not in doc.get('tags', '') or
             not self._has_tool('xelatex')):
+            os.chdir(olddir)
             return
         pdf_path = os.path.join(self.root, path[:-4] + '.pdf')
         pdf_mtime = (os.path.isfile(pdf_path) and
@@ -293,21 +298,28 @@ class SiteProcessor:
         pdf_sty_path = os.path.join(self.root, 'code/strobe-pdf.sty')
         if (os.path.getmtime(path) >= pdf_mtime or
             os.path.getmtime(pdf_sty_path) >= pdf_mtime):
-            cmd = ("rst2latex.py --use-latex-citations --source-link "
-                   "--source-url http://strobe.cc/%s/ --embed-stylesheet "
-                   "--stylesheet-path=%s %s") % (
-                           doc['path'], pdf_sty_path[:-4], path)
-            latex = self._run_tool(cmd.split(), '')
-            dir = tempfile.mkdtemp()
-            curdir = os.getcwd()
-            os.chdir(dir)
+            cmd = ['--use-latex-citations', '-d',
+                   '--title=%s' % doc['html']['title'],
+                   '--source-url=http://strobe.cc/%s/' % doc['path'],
+                   '--embed-stylesheet',
+                   '--stylesheet-path=%s' % pdf_sty_path[:-4],
+                   path]
+            latexpub = docutils.core.Publisher(
+                    destination_class=docutils.io.StringOutput)
+            latexpub.set_components('standalone', 'restructuredtext', 'latex')
+            latex = latexpub.publish(argv=cmd)
+            tmpdir = tempfile.mkdtemp()
             # execute twice, let xelatex do its reference thing
-            self._run_tool(['xelatex'], latex)
-            self._run_tool(['xelatex'], latex)
-            shutil.copy('texput.pdf', pdf_path)
-            map(os.unlink, os.listdir('.'))
-            os.rmdir(dir)
-            os.chdir(curdir)
+            out = self._run_tool(['xelatex', '--output-directory', tmpdir],
+                                 latex)
+            if 'debug' in sys.argv:
+                print out
+            self._run_tool(['xelatex', '--output-directory', tmpdir], latex)
+            shutil.copy(os.path.join(tmpdir, 'texput.pdf'), pdf_path)
+            map(lambda f: os.unlink(os.path.join(tmpdir, f)),
+                os.listdir(tmpdir))
+            os.rmdir(tmpdir)
+        os.chdir(olddir)
 
     def _build_index(self):
         """Rebuilds the site index from the stored article list."""

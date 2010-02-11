@@ -1,11 +1,18 @@
 \ProvidesPackage{strobe-pdf}
 [too lazy to find out if this comment is required]
 
+\RequirePackage{fullpage}
+\RequirePackage{fancyvrb}
+\RequirePackage{fancyhdr}
+\RequirePackage{color}
 \RequirePackage{fontspec}
 \RequirePackage{xunicode}
 \RequirePackage{xltxtra}
-\RequirePackage{fancyhdr}
+
 \pagestyle{fancy}
+\headheight 35pt
+\fancyhead[L]{\@title}
+\fancyhead[R]{\href{http://strobe.cc}{Article from strobe.cc}}
 
 \setmainfont[Mapping=tex-text]{Skolar OT}
 
