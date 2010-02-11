@@ -9,13 +9,14 @@ This template expects the following in its namespace:
   <link href="http://strobe.cc/" rel="alternate"></link>
   <link href="http://strobe.cc/feeds/content.xml" rel="self"></link>
   <id>http://strobe.cc/</id>
-  <updated>${articles[-1][0].isoformat()}</updated>
+  <updated>${articles[-1][0].strftime('%Y-%m-%dT%H:%M:%SZ')}</updated>
 % for pubdate, updated, article, html in reversed(articles):
   <entry>
     <title>${article['html']['title'] + (updated and ' (updated)' or '')}</title>
     <link href="http://strobe.cc/${article['path']}/" rel="alternate"></link>
-    <updated>${pubdate.isoformat()}</updated>
+    <updated>${pubdate.strftime('%Y-%m-%dT%H:%M:%SZ')}</updated>
     <id>http://strobe.cc/${article['path']}/</id>
+    <author><name>${article['author']}</name></author>
     <summary type="html"><![CDATA[
     ${html}
     ]]>
