@@ -73,6 +73,15 @@ div.linenodiv pre {
     color: #666;
 }
 
+img.eqn {
+  padding-top: 0.2em;
+}
+
+span.mmleqn {
+  display: none;
+  white-space: nowrap;
+}
+
 </%def>
 
 <a href="/${doc['path']}/"><h1>${doc['html']['title']}</h1></a>
@@ -118,25 +127,46 @@ No tags
 </div>
 
 <div style="font-size: 90%; padding-top: 2.5em;">
-  <a href="/${doc['path']}/${doc['path']}.rst">Article source.</a>
+  Other formats:
+  <a href="/${doc['path']}/${doc['path']}.pdf">PDF</a>.
+  <a href="/${doc['path']}/${doc['path']}.rst">ReStructuredText source</a>.
 </div>
 
-<script type="text/javascript">
-  // reposition footnotes
-  window.onload = function() {
-    var divs = document.getElementsByTagName('div');
-    for (var i = 0; i < divs.length; i++) {
-      try {
-        if (divs[i].className == "fnwrap") {
-          var footnote = divs[i].getElementsByTagName("p")[0];
-          var target = document.getElementById(footnote.id + "_target");
-          footnote = footnote.parentNode.removeChild(footnote);
-          target.appendChild(footnote);
-        }
-      } catch (e) {}
+<script type="text/javascript"><![CDATA[
+  function forEachByClass(tag, cls, fn) {
+    var elems = document.getElementsByTagName(tag);
+    for (var i = 0; i < elems.length; i++) {
+      if(elems[i].className == cls) {
+        fn(elems[i]);
+      }
     }
   }
-</script>
+  window.onload = function() {
+    // reposition footnotes
+    forEachByClass("div", "fnwrap", function(elem) {
+      try {
+        var footnote = elem.getElementsByTagName("p")[0];
+        var target = document.getElementById(footnote.id + "_target");
+        footnote = footnote.parentNode.removeChild(footnote);
+        target.appendChild(footnote);
+      } catch (e) {}
+      })
+    // check for mathml-compatible browser, enable mathml if ok
+    try {
+      var GeckoVerStr = navigator.userAgent.match(/rv:(\d+\.\d+).*Gecko\//);
+      if (GeckoVerStr) {
+        if (parseFloat(GeckoVerStr[1])>=1.8) {
+          forEachByClass("img", "eqn", function(elem) {
+              elem.style.display = "none";
+          });
+          forEachByClass("span", "mmleqn", function(elem) {
+              elem.style.display = "inline";
+          });
+        }
+      }
+    } catch (e) {}
+  }
+]]></script>
 
 
 % if 'published' in doc and 'article' in doc.get('tags', ''):

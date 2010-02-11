@@ -9,23 +9,28 @@
 import os
 import sys
 import subprocess
+import shutil
 import traceback
+import tempfile
 from datetime import date, datetime
+from hashlib import md5
 
 try:
     import docutils.core
+    import docutils.nodes
     from docutils.transforms.frontmatter import DocTitle
     from docutils.parsers.rst import directives
     import beaker
     import pygments_rst_directive
     from mako.template import Template
     from mako.lookup import TemplateLookup
-    from BeautifulSoup import BeautifulSoup, Tag
+    from BeautifulSoup import BeautifulSoup, BeautifulStoneSoup, Tag
     from mercurial import cmdutil, ui, hg
     from mercurial.error import Abort, LookupError
 except ImportError:
     print "Import error. Check dependencies."
     sys.exit(0)
+
 
 class SiteProcessor:
     def __init__(self, root):
@@ -143,6 +148,24 @@ class SiteProcessor:
         for pre in bodysoup.findAll('pre', {'style': "line-height: 125%"}):
             del pre['style']
 
+        # convert raw-math sections to MML and/or images, as appropriate
+        for math in bodysoup.findAll('span', {'class': 'raw-math'}):
+            text = ''.join(map(unicode, math.contents))
+            map(lambda c: c.extract(), math.contents)
+            name = '.eqn%s.gif' % md5(text).hexdigest()
+            path = os.path.join(self.root, doc['path'], name)
+            if not os.path.isfile(path):
+                subprocess.check_call(['mathtex', text, '-o', path[:-4]])
+            attrs = {'src': name, 'alt': '(equation)', 'class': 'eqn'}
+            img = Tag(bodysoup, 'img', attrs.items())
+            math.insert(0, img)
+            if mathml and self._has_tool('itex2MML'):
+                mml = BeautifulStoneSoup(
+                        self._run_tool(['itex2MML', '--raw-filter'], text))
+                mmlw = Tag(bodysoup, 'span', [('class', 'mmleqn')])
+                mmlw.insert(0, mml)
+                math.insert(1, mmlw)
+
         # for feeds and whatnot
         def absolve(elem, name):
             href = elem[name]
@@ -157,9 +180,6 @@ class SiteProcessor:
                 bodysoup.findAll('img', {'src': True}))
 
         body = unicode(bodysoup).encode('utf-8')
-        if mathml and 'MathML' in doc.get('tags', ''):
-            # Gotta process through itex2MML. oh, and screw you, WebKit
-            body = self._run_tool(['itex2MML'], body)
         body = self._run_tool(
                 ['perl', os.path.join(self.root, 'code/SmartyPants.pl')],
                 body)
@@ -203,11 +223,11 @@ class SiteProcessor:
         hist = os.path.join(os.path.dirname(path), 'history')
         if not os.path.isdir(hist):
             os.mkdir(hist)
-        self._write("history.html", os.path.join(hist, 'index.html'), doc=doc)
+        self._write("history.html", os.path.join(hist, 'index.xhtml'), doc=doc)
 
     def _process_doc(self, path):
         """Processes a reStructuredText document. Writes the processed
-        version to disk. If the document is published, adds it to
+        version(s) to disk. If the document is published, adds it to
         self.published."""
         fobj = open(path)
         contents = fobj.read()
@@ -237,7 +257,7 @@ class SiteProcessor:
             doc['tags'] = map(lambda s: s.strip(), doc['tags'].split(','))
         def todate(s):
             (y, m, d) = map(lambda i: int(i.lstrip('0')), s.strip().split('-'))
-            return date(y, m, d)
+            return datetime(y, m, d)
         if 'published' in doc:
             doc['published'] = todate(doc['published'])
         if 'updated' in doc:
@@ -250,7 +270,7 @@ class SiteProcessor:
             doc['edited'] = datetime.fromtimestamp(os.path.getmtime(path))
 
         body = self._clean_html(doc)
-        outpath = os.path.join(dirname, 'index.html')
+        outpath = os.path.join(dirname, 'index.xhtml')
         self._write("article.html", outpath, doc=doc, body=body)
 
         if 'published' in doc and 'Article' in doc.get('tags', ''):
@@ -258,9 +278,35 @@ class SiteProcessor:
         if changelog:
             self._write_history(doc, path)
 
+        # pdf time, whooo
+        if ('Article' not in doc.get('tags', '') or
+            not self._has_tool('xelatex')):
+            return
+        pdf_path = os.path.join(self.root, path[:-4] + '.pdf')
+        pdf_mtime = (os.path.isfile(pdf_path) and
+                     os.path.getmtime(pdf_path)) or 0
+        pdf_sty_path = os.path.join(self.root, 'code/strobe-pdf.sty')
+        if (os.path.getmtime(path) >= pdf_mtime or
+            os.path.getmtime(pdf_sty_path) >= pdf_mtime):
+            cmd = ("rst2latex.py --use-latex-citations --source-link "
+                   "--source-url http://strobe.cc/%s/ --embed-stylesheet "
+                   "--stylesheet-path=%s %s") % (
+                           doc['path'], pdf_sty_path[:-4], path)
+            latex = self._run_tool(cmd.split(), '')
+            dir = tempfile.mkdtemp()
+            curdir = os.getcwd()
+            os.chdir(dir)
+            # execute twice, let xelatex do its reference thing
+            self._run_tool(['xelatex'], latex)
+            self._run_tool(['xelatex'], latex)
+            shutil.copy('texput.pdf', pdf_path)
+            map(os.unlink, os.listdir('.'))
+            os.rmdir(dir)
+            os.chdir(curdir)
+
     def _build_index(self):
         """Rebuilds the site index from the stored article list."""
-        path = os.path.join(self.root, 'index.html')
+        path = os.path.join(self.root, 'index.xhtml')
         self.published.sort(key=lambda doc: doc['published'])
         self._write('home.html', path, article_list=self.published)
 
