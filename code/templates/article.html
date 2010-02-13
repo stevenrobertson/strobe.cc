@@ -13,6 +13,12 @@
 </%def>
 
 <%def name="css()">
+
+blockquote {
+  padding: 0.5em 2em;
+  background-color: #eee;
+}
+
 div.abstract {
     font-style: italic;
     font-size: 110%;
@@ -128,7 +134,7 @@ No tags
 
 <div style="font-size: 90%; padding-top: 2.5em;">
   Other formats:
-  <a href="/${doc['path']}/${doc['path']}.pdf">PDF</a>.
+  <a href="/${doc['path']}/${doc['path']}.pdf">PDF</a> (not entirely working).
   <a href="/${doc['path']}/${doc['path']}.rst">ReStructuredText source</a>.
 </div>
 
@@ -153,16 +159,18 @@ No tags
       })
     // check for mathml-compatible browser, enable mathml if ok
     try {
-      var GeckoVerStr = navigator.userAgent.match(/rv:(\d+\.\d+).*Gecko\//);
-      if (GeckoVerStr) {
-        if (parseFloat(GeckoVerStr[1])>=1.8) {
-          forEachByClass("img", "eqn", function(elem) {
-              elem.style.display = "none";
-          });
-          forEachByClass("span", "mmleqn", function(elem) {
-              elem.style.display = "inline";
-          });
-        }
+      var pass = false;
+      var verstr = navigator.userAgent.match(/rv:(\d+\.\d+).*Gecko\//);
+      if (verstr) {pass = parseFloat(verstr[1])>=1.8;}
+      verstr = navigator.userAgent.match(/AppleWebKit\/(\d+\.\d+)/);
+      if (verstr) {pass = parseFloat(verstr[1])>=999999.;}//not yet
+      if (pass) {
+        forEachByClass("img", "eqn", function(elem) {
+            elem.style.display = "none";
+        });
+        forEachByClass("span", "mmleqn", function(elem) {
+            elem.style.display = "inline";
+        });
       }
     } catch (e) {}
   }

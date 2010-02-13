@@ -6,6 +6,8 @@
 # going to turn into a "project" and is pretty tightly coupled to my site
 # anyway. The content of the site remains licensed as indicated on each page.
 
+from __future__ import with_statement
+
 import os
 import sys
 import subprocess
@@ -14,6 +16,7 @@ import traceback
 import tempfile
 from datetime import date, datetime
 from hashlib import md5
+from contextlib import contextmanager
 
 try:
     import docutils.core
@@ -32,6 +35,12 @@ except ImportError:
     print "Import error. Check dependencies."
     sys.exit(0)
 
+@contextmanager
+def chdir(path):
+    cwd = os.getcwd()
+    os.chdir(path)
+    yield
+    os.chdir(cwd)
 
 class SiteProcessor:
     def __init__(self, root):
@@ -110,14 +119,6 @@ class SiteProcessor:
                                             abs.findAll('p')[1].contents))
             abs.extract()
 
-        # and after a protracted fight with DocUtils, I've decided to do this
-        # part in BeautifulSoup, too
-        for hv in range(5, 0, -1):
-            for hdr in bodysoup.findAll('h%d' % hv):
-                newhdr = Tag(bodysoup, 'h%d' % (hv + 1), hdr.attrs)
-                map(lambda chld: newhdr.insert(0, chld), reversed(hdr.contents))
-                hdr.replaceWith(newhdr)
-
         # and come on, seriously? a table for footnotes? jeez.
         for fn in bodysoup.findAll('table',
                                    attrs={'class': 'docutils footnote'}):
@@ -160,7 +161,7 @@ class SiteProcessor:
 
         # convert raw-math sections to MML and/or images, as appropriate
         for math in bodysoup.findAll('span', {'class': 'raw-math'}):
-            text = ''.join(map(unicode, math.contents))
+            text = ''.join(map(unicode, math.contents)).encode('utf-8')
             map(lambda c: c.extract(), math.contents)
             name = '.eqn%s.gif' % md5(text).hexdigest()
             imgpath = os.path.join(self.root, doc['path'], name)
@@ -170,8 +171,9 @@ class SiteProcessor:
             img = Tag(bodysoup, 'img', attrs.items())
             math.insert(0, img)
             if mathml and self._has_tool('itex2MML'):
-                mml = BeautifulStoneSoup(
-                        self._run_tool(['itex2MML', '--raw-filter'], text))
+                mmlraw = self._run_tool(['itex2MML', '--raw-filter'], text)
+                mmlraw = mmlraw.replace('Rightarrow', 'rArr')
+                mml = BeautifulStoneSoup(mmlraw)
                 mmlw = Tag(bodysoup, 'span', [('class', 'mmleqn')])
                 mmlw.insert(0, mml)
                 math.insert(1, mmlw)
@@ -244,16 +246,24 @@ class SiteProcessor:
         fobj.close()
 
         # let ReST includes use relative paths when processing
-        olddir = os.getcwd()
-        os.chdir(os.path.dirname(path))
-        docinfo = docutils.core.publish_doctree(contents).children[1]
-        html = docutils.core.publish_parts(contents, writer_name='html')
-        dirname = os.path.split(os.path.join(self.root, path))[0]
-        os.chdir(olddir)
+        with chdir(os.path.dirname(path)):
+            docinfo = docutils.core.publish_doctree(contents).children[1]
+            html = docutils.core.publish_parts(contents, writer_name='html',
+                    settings_overrides = {'initial_header_level': 2})
+            latex = docutils.core.publish_parts(contents, writer_name='latex',
+                    settings_overrides = {
+                            'date': True,
+                            'use_latex_citations': True,
+                            'embed_stylesheet': True,
+                            'output_encoding': 'utf-8',
+                            'stylesheet_path':
+                                os.path.join(self.root, 'code/strobe-pdf')})
 
+        slug = os.path.split(os.path.dirname(path))[1]
         doc =   {
                 'html': html,
-                'path': dirname[len(self.root)+1:],
+                'slug': slug,
+                'path': slug
                 }
 
         # process docinfo (variables at start of article)
@@ -280,7 +290,7 @@ class SiteProcessor:
             doc['edited'] = datetime.fromtimestamp(os.path.getmtime(path))
 
         body = self._clean_html(doc)
-        outpath = os.path.join(dirname, 'index.xhtml')
+        outpath = os.path.join(self.root, slug, 'index.xhtml')
         self._write("article.html", outpath, doc=doc, body=body)
 
         if 'published' in doc and 'Article' in doc.get('tags', ''):
@@ -291,35 +301,36 @@ class SiteProcessor:
         # pdf time, whooo
         if not self._has_tool('xelatex'):
             return
-        os.chdir(os.path.join(root, doc['path']))
         pdf_path = os.path.join(self.root, path[:-4] + '.pdf')
         pdf_mtime = (os.path.isfile(pdf_path) and
                      os.path.getmtime(pdf_path)) or 0
         pdf_sty_path = os.path.join(self.root, 'code/strobe-pdf.sty')
         if (os.path.getmtime(path) >= pdf_mtime or
             os.path.getmtime(pdf_sty_path) >= pdf_mtime):
-            cmd = ['--use-latex-citations', '-d',
-                   '--title=%s' % doc['html']['title'],
-                   '--source-url=http://strobe.cc/%s/' % doc['path'],
-                   '--embed-stylesheet',
-                   '--stylesheet-path=%s' % pdf_sty_path[:-4],
-                   path]
-            latexpub = docutils.core.Publisher(
-                    destination_class=docutils.io.StringOutput)
-            latexpub.set_components('standalone', 'restructuredtext', 'latex')
-            latex = latexpub.publish(argv=cmd)
+
+            src = latex['whole'].split('\n')
+            src.remove(r'\usepackage[utf8]{inputenc}')
+            src[src.index('%[STROBE_REPLACE]')] = (
+                    '\\fancyhead[L]{%s}\n'
+                    '\\fancyhead[R]{strobe.cc}') % html['title']
+            # this one's real risky
+            src[src.index(r'\title{%s%%' % html['title'])] = (
+                    r'\title{\href{http://strobe.cc/%s/}{%s}%%' %
+                        (slug, html['title']))
+            src = '\n'.join(src).encode('utf-8')
             tmpdir = tempfile.mkdtemp()
             # execute twice, let xelatex do its reference thing
-            out = self._run_tool(['xelatex', '--output-directory', tmpdir],
-                                 latex)
-            if 'debug' in sys.argv:
-                print out
-            self._run_tool(['xelatex', '--output-directory', tmpdir], latex)
+            with chdir(os.path.dirname(path)):
+                out = self._run_tool(
+                        ['xelatex', '--output-directory', tmpdir], src)
+                if 'debug' in sys.argv:
+                    print src, out
+                self._run_tool(
+                        ['xelatex', '--output-directory', tmpdir], src)
             shutil.copy(os.path.join(tmpdir, 'texput.pdf'), pdf_path)
             map(lambda f: os.unlink(os.path.join(tmpdir, f)),
                 os.listdir(tmpdir))
             os.rmdir(tmpdir)
-        os.chdir(olddir)
 
     def _build_index(self):
         """Rebuilds the site index from the stored article list."""
