@@ -1,6 +1,3 @@
-\ProvidesPackage{strobe-pdf}
-[too lazy to find out if this comment is required]
-
 \RequirePackage{fullpage}
 \RequirePackage{fancyvrb}
 \RequirePackage{fancyhdr}
@@ -8,12 +5,17 @@
 \RequirePackage{fontspec}
 \RequirePackage{xunicode}
 \RequirePackage{xltxtra}
+\RequirePackage{sectsty}
 
 \pagestyle{fancy}
-\headheight 35pt
+\headheight 24pt
+\headsep 12pt
 
 %[STROBE_REPLACE]
 
-\setmainfont[Mapping=tex-text]{Skolar OT}
+\setromanfont[Mapping=tex-text,BoldFont={Skolar:+smcp,+c2sc}]{Skolar}
+\setsansfont{Gill Sans Std}
+\AtBeginDocument{\setmathfont{Skolar}}
+\allsectionsfont{\sffamily}
 \addtolength{\parskip}{\baselineskip}
 

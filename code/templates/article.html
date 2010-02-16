@@ -88,6 +88,49 @@ span.mmleqn {
   white-space: nowrap;
 }
 
+@font-face {
+  font-family: "STIXGeneral";
+  src: url("http://strobe.cc/media/stix/STIXGeneral.otf");
+}
+
+@font-face {
+  font-family: "STIXGeneral";
+  src: url("http://strobe.cc/media/stix/STIXGeneralItalic.otf");
+  font-style: italic;
+}
+
+math {
+  font-family: "skolar-1", "skolar-2", "STIXGeneral", serif;
+}
+
+div.align-right {
+  float: right;
+  position: relative;
+  margin-left: 1em;
+  width: 240px;
+}
+
+div.align-left {
+  float: left;
+  position: relative;
+  margin-left: 1em;
+  width: 240px;
+}
+
+p.caption {
+  font-size: 85%;
+}
+
+div.align-right p.caption, div.align-right img.figimg {
+  width: 360px;
+}
+
+div.align-left  p.caption, div.align-left  img.figimg {
+  position: relative;
+  width: 360px;
+  left: -120px;
+}
+
 </%def>
 
 <a href="/${doc['path']}/"><h1>${doc['html']['title']}</h1></a>

@@ -9,11 +9,12 @@
 from __future__ import with_statement
 
 import os
+import re
 import sys
-import subprocess
 import shutil
-import traceback
 import tempfile
+import traceback
+import subprocess
 from datetime import date, datetime
 from hashlib import md5
 from contextlib import contextmanager
@@ -22,8 +23,10 @@ try:
     import docutils.core
     import docutils.io
     import docutils.nodes
+    import docutils.writers
     from docutils.transforms.frontmatter import DocTitle
     from docutils.parsers.rst import directives
+    from docutils.writers import latex2e
     import beaker
     import pygments_rst_directive
     from mako.template import Template
@@ -41,6 +44,22 @@ def chdir(path):
     os.chdir(path)
     yield
     os.chdir(cwd)
+
+class LaTeXTranslator(latex2e.LaTeXTranslator):
+    """Overrides for TeX awfulness"""
+    def visit_figure(self, node):
+        self.requirements['float_settings'] = r"""\usepackage{float}
+\usepackage{wrapfig}"""
+        if 'align' in node.attributes:
+            align = {'left': 'L', 'right': 'R', 'center': 'C'}.get(
+                    node.attributes['align'].lower(), 'R')
+
+            self.out.append('\\begin{wrapfigure}{%s}{0.5\\textwidth}' % align)
+            self.context.append('\\vspace{-36pt}\n\\end{wrapfigure}\n')
+        else:
+            self.out.append('\\begin{figure}')
+            self.context.append('\\end{figure}\n')
+
 
 class SiteProcessor:
     def __init__(self, root):
@@ -191,10 +210,13 @@ class SiteProcessor:
             map(lambda img: absolve(img, 'src'),
                 bodysoup.findAll('img', {'src': True}))
 
-        body = unicode(bodysoup).encode('utf-8')
+        # for unknown reasons, BS isn't parsing the img tags pointing to PDFs
+        body = re.sub('<img[^>]* src="([^"]*).pdf"[^>]*>',
+                      '<img src="\\1.png" class="figimg" />',
+                      unicode(bodysoup))
         body = self._run_tool(
                 ['perl', os.path.join(self.root, 'code/SmartyPants.pl')],
-                body)
+                body.encode('utf-8'))
         return body
 
     def _get_changelog(self, path):
@@ -250,7 +272,9 @@ class SiteProcessor:
             docinfo = docutils.core.publish_doctree(contents).children[1]
             html = docutils.core.publish_parts(contents, writer_name='html',
                     settings_overrides = {'initial_header_level': 2})
-            latex = docutils.core.publish_parts(contents, writer_name='latex',
+            ltwriter = latex2e.Writer()
+            ltwriter.translator_class = LaTeXTranslator
+            latex = docutils.core.publish_parts(contents, writer=ltwriter,
                     settings_overrides = {
                             'date': True,
                             'use_latex_citations': True,
@@ -299,15 +323,16 @@ class SiteProcessor:
             self._write_history(doc, path)
 
         # pdf time, whooo
-        if not self._has_tool('xelatex'):
-            return
+
         pdf_path = os.path.join(self.root, path[:-4] + '.pdf')
         pdf_mtime = (os.path.isfile(pdf_path) and
                      os.path.getmtime(pdf_path)) or 0
         pdf_sty_path = os.path.join(self.root, 'code/strobe-pdf.sty')
         if (os.path.getmtime(path) >= pdf_mtime or
             os.path.getmtime(pdf_sty_path) >= pdf_mtime):
-
+            if not self._has_tool('xelatex'):
+                return
+            # SWEET JESUS THIS IS UGLY
             src = latex['whole'].split('\n')
             src.remove(r'\usepackage[utf8]{inputenc}')
             src[src.index('%[STROBE_REPLACE]')] = (
@@ -317,7 +342,15 @@ class SiteProcessor:
             src[src.index(r'\title{%s%%' % html['title'])] = (
                     r'\title{\href{http://strobe.cc/%s/}{%s}%%' %
                         (slug, html['title']))
+            for img in filter(lambda l: 'includegraphics' in l, src):
+                src[src.index(img)] = re.sub(
+                        r'.*\\includegraphics[^{]*[{]([^}]*)[}].*',
+                        r'\\includegraphics[width=\linewidth]{\1}', img)
+            for capt in filter(lambda l: l.startswith(r'\caption'), src):
+                src[src.index(capt)] = re.sub(
+                        r'[{]Figure [1234567890]*: ', '{', capt)
             src = '\n'.join(src).encode('utf-8')
+
             tmpdir = tempfile.mkdtemp()
             # execute twice, let xelatex do its reference thing
             with chdir(os.path.dirname(path)):
