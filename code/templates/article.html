@@ -181,7 +181,8 @@ No tags
   <a href="/${doc['path']}/${doc['path']}.rst">ReStructuredText source</a>.
 </div>
 
-<script type="text/javascript"><![CDATA[
+<script type="text/javascript">
+  //<![CDATA[
   function forEachByClass(tag, cls, fn) {
     var elems = document.getElementsByTagName(tag);
     for (var i = 0; i < elems.length; i++) {
@@ -217,7 +218,8 @@ No tags
       }
     } catch (e) {}
   }
-]]></script>
+  // ]]>
+</script>
 
 
 % if 'published' in doc and 'article' in doc.get('tags', ''):

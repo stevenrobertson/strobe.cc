@@ -5,10 +5,16 @@ Redirect permanent /4.html /touchy_feely/
 Redirect permanent /feeds/articles /feeds/content.xml
 Redirect permanent /feeds/entries /feeds/content.xml
 
+RewriteEngine on
+RewriteRule ^/$ /index.xhtml
+
+RewriteCond %{HTTP_USER_AGENT} ((.*MSIE.*)|(Lynx.*))
+RewriteCond %{REQUEST_FILENAME} \.xhtml$
+RewriteRule .* - [T=text/html]
+
 # No secrets here.
 <Files ~ "^\.ht">
     Order allow,deny
     Allow from all
 </Files>
-
 
