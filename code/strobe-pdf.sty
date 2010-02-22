@@ -1,11 +1,14 @@
 \RequirePackage{fullpage}
-\RequirePackage{fancyvrb}
-\RequirePackage{fancyhdr}
 \RequirePackage{color}
 \RequirePackage{fontspec}
 \RequirePackage{xunicode}
 \RequirePackage{xltxtra}
-\RequirePackage{sectsty}
+
+\usepackage{fancyhdr}
+\usepackage{fancyvrb}
+\usepackage{sectsty}
+\usepackage{tocloft}
+\usepackage{parskip}
 
 \pagestyle{fancy}
 \headheight 24pt
@@ -14,8 +17,8 @@
 %[STROBE_REPLACE]
 
 \setromanfont[Mapping=tex-text,BoldFont={Skolar:+smcp,+c2sc}]{Skolar}
-\setsansfont{Gill Sans Std}
-\AtBeginDocument{\setmathfont{Skolar}}
+\setsansfont[Mapping=tex-text,BoldFont={MetaPlusMedium-Caps:+smcp,+c2sc}]{MetaPlusMedium-Roman}
+
 \allsectionsfont{\sffamily}
 \addtolength{\parskip}{\baselineskip}
 

@@ -17,8 +17,83 @@ The Codec Game
 
 .. contents::
 
-Introduction
-------------
+Psychophysical measurement
+--------------------------
+
+The idea of measurement is closely associated with that of scale; a number
+representing a measurement is only meaningful when it can be located in a
+larger context. In many cases, this context takes the form of an *interval
+scale* and an associated unit [Stev1986]_. Interval scales can be
+characterized intuitively in terms of certain invariant transformations.
+Particularly, the difference between two values in an interval scale is
+unchanged by addition: for values `$A$`, `$B$`, and `$\alpha$` expressed in
+the units of an interval scale, `$B - A = (B + \alpha) - (A + \alpha)$` (or
+more concretely, the difference in length between a three meter stick and a
+four meter stick is the same as between a four and a five).
+
+
+
+
+
+
+
+
+
+
+While this characterization is helpful, it is merely a consequence of
+certain axiomatic properties of the underlying mathematical representation
+of the scale [Falm1985]_. The quantity under measurement must exist inside
+a system which behaves according to these axioms. The physical universe, by
+and large, does so, and we rarely concern ourselves with these
+
+
+
+The system characterized by an interval scale must display certain
+properties in order for the measurements to remain valid
+
+In order for an interval scale to be valid, the system under measurement
+must display 
+
+The system being measure
+
+unit for a particular measurement may be
+defined in terms of one or more `physical constants`_, or  nearly every interval-scale unit in
+use today can be obtained by chaining such equivalencies.
+
+
+
+
+cale is
+best described in terms of the way a difference between two measurements
+can be preserved mathematically.
+
+
+the idea of scale is itself 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 Perceived video quality is a subjective and very context-sensitive property,
 and as such it can be surprisingly difficult to nail down a valid quantitative
@@ -85,16 +160,75 @@ generation of video codecs.
 
 Let's fix that.
 
+In this article, we'll explore robust psychophysical assessment techniques,
+recap previous video quality measurement efforts (and why they don't meet
+the needs of codec developers), and examine how to deal with statistical
+challenges arising from Internet-based studies. Using this theoretical
+basis, we'll lay out a plan for building a free online game designed to
+turn video quality assessment into a fun, challenging, and competitive
+time-killer.
+
+
+
 Pairwise comparison
 -------------------
 
 
+Subjective video quality evaluation requires *subjects*, but for most video
+coding researchers and open-source developers, assembling enough willing
+participants in one physical location for a valid study is too costly and
+impractical to consider. Tasks that require subjective evaluation may be
+handled by asking friends, colleagues, and online communities
+interested in this type of thing (such as the `Doom9 forum`_), but the
+results of such tests are anecdotal and can be difficult to evaluate.
+
+.. _Doom9 forum: http://forum.doom9.org/
+
+Ideally, we would like to construct a study that allows casual participants
+to provide the same quality of data as expensive, controlled lab tests.
+The feasibility of this goal is contingent on 
+
+
+Test design
+```````````
+
+Consider a test setup in which a viewer is presented with two images. Each
+pair of images is a version of a single source image, but the images have
+each been blurred to a certain, typically different, extent. The subject is
+shown each of the images separately on a computer screen for 10 seconds,
+with 5 seconds in between the image presentations. After both images have
+been shown and removed, the subject is asked to choose whether the first or
+second image is sharper.
+
+This is an exmaple of a `two-alternative forced choice`_ task. It's forced
+in the sense that there's no option to indicate that two stimuli appear
+identical. 
+
+each image has been
+blurred 
 
 
 
 
-Pairwise comparison
-```````````````````
+
+Consider a 2AFC experiment in which a user must choose which of two
+photographs is less blurry. In each trial, two versions of the same image
+will be displayed, each of which has been blurred by a certain amount. Each
+image will be displayed by itself for 10 seconds, with a 5-second delay
+between blanking the screen after the first image and presenting the
+second. The subject will then be asked to identify whether the first or
+second sample was more heavily blurred.
+
+If the images presented are quite different in level of blur, we would
+expect a competent and earnest user who understood the task to respond
+correctly without challenge. This should be consistent over several trials
+
+
+
+
+
+
+
 
 
 It is common, and not altogether inaccurate\ [#]_, to model the value of a
@@ -130,18 +264,6 @@ can eliminate or at least expose ordering effects [Wick2002]_.
         We use the term to agree with literature (and because in most cases
         our expectations won't be contradicted, which is kind of the point
         of expectations).
-
-Consider a 2AFC experiment in which a user must choose which of two
-photographs is less blurry. In each trial, two versions of the same image
-will be displayed, each of which has been blurred by a certain amount. Each
-image will be displayed by itself for 10 seconds, with a 5-second delay
-between blanking the screen after the first image and presenting the
-second. The subject will then be asked to identify whether the first or
-second sample was more heavily blurred.
-
-If the images presented are quite different in level of blur, we would
-expect a competent and earnest user who understood the task to respond
-correctly without challenge. This should be consistent over several trials
 
 
 By contrast, a setup in which two identical
