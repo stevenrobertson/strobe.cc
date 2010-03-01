@@ -486,6 +486,11 @@ written. Questions that I'm working on answering include:
 
 * Can instruction reordering by the programmer result in significant speedups?
 
+Note: as of March 1, it's looking highly unlikely that I'll actually finish
+answering these questions before the release of GF100-based chips, after
+which interest (both yours and mine) is expected to wane considerably. Rest
+assured, I'm hard at work, just not on this.
+
 Acknowledgments
 ---------------
 

@@ -40,12 +40,16 @@ fixed as soon as possible.
     http://bugzilla.kernel.org/buglist.cgi?product=File+System&bug_status=NEW&bug_status=REOPENED&bug_status=ASSIGNED&component=ext4
 .. _competent users: http://www.phoronix.com/scan.php?page=news_item&px=Nzk0OA
 
-Perhaps as a consequence of this, I haven't seen the results of any filesystem
-stability benchmarks around the 'net. If such a benchmark showed anything less
-than perfect scores for any filesystems involved, it's quite likely that the
-maintainers of the filesystem would fix those bugs as soon as possible, so
-rather than going through the trouble of publishing a benchmark you might as
-well just submit an issue report.
+Perhaps as a consequence of this, I haven't seen the results of any
+filesystem stability benchmarks around the 'net. If such a benchmark showed
+anything less than perfect scores for any filesystems involved under normal
+conditions, it's quite likely that the maintainers of the filesystem would
+fix those bugs as soon as possible, so rather than going through the
+trouble of publishing a benchmark you might as well just submit an issue
+report.
+
+On the other hand, drives fail relatively often. Filesystems justifiably
+assume that 
 
 There are a few tools designed to expose filesystem *consistency*\ [#]_ issues,
 like the simple but effective fsx_. The tool assaults a single file with random

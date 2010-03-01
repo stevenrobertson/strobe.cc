@@ -31,7 +31,8 @@ try:
     import pygments_rst_directive
     from mako.template import Template
     from mako.lookup import TemplateLookup
-    from BeautifulSoup import BeautifulSoup, BeautifulStoneSoup, Tag
+    from BeautifulSoup import BeautifulSoup, BeautifulStoneSoup, \
+                              Tag, NavigableString
     from mercurial import cmdutil, ui, hg
     from mercurial.error import Abort, LookupError
 except ImportError:
@@ -143,36 +144,47 @@ class SiteProcessor:
                                    attrs={'class': 'docutils footnote'}):
             try:
                 (link, text) = fn.findAll('td')
-            except:
-                continue
-            fnwrap = Tag(bodysoup, 'div', [('class', 'fnwrap')])
-            newfn = Tag(bodysoup, 'p',
-                        [('class', 'footnote'), ('id', fn['id'])])
-            fnwrap.insert(0, newfn)
-            map(lambda e: newfn.insert(0, e), reversed(text.contents))
-            newfn.insert(0, ' ')
-            anchr = link.find('a')
-            newanchr = Tag(bodysoup, 'a', anchr.attrs)
-            newanchr.insert(0, unicode(anchr.find(text=True)).strip('[]'))
-            newfn.insert(0, newanchr)
-            fn.replaceWith(fnwrap)
+                fnwrap = Tag(bodysoup, 'div', [('class', 'fnwrap')])
+                newfn = Tag(bodysoup, 'p',
+                            [('class', 'footnote'), ('id', fn['id'])])
+                fnwrap.insert(0, newfn)
+                map(lambda e: newfn.insert(0, e), reversed(text.contents))
+                newfn.insert(0, ' ')
+                anchr = link.find('a')
+                newanchr = Tag(bodysoup, 'a', anchr.attrs)
+                newanchr.insert(0, unicode(anchr.find(text=True)).strip('[]'))
+                newfn.insert(0, newanchr)
+                fn.replaceWith(fnwrap)
+            except BaseException, e:
+                traceback.print_exc(e)
+                print "\nWarning: footnote weirdness: \n%s\n" % fn
 
         for anchr in bodysoup.findAll('a',
                 attrs={'class': 'footnote-reference'}):
-            # reformat footnote links
-            sup = Tag(bodysoup, 'sup')
-            newanchr = Tag(bodysoup, 'a', anchr.attrs)
-            newanchr.insert(0, unicode(anchr.find(text=True)).strip('[]'))
-            sup.insert(0, newanchr)
-            anchr.replaceWith(sup)
-            # append empty span for use by footnote javascript
-            id =  newanchr['href'][1:] + '_target'
-            span = Tag(bodysoup, 'span', [('class', 'fntarget'), ('id', id)])
-            parent = sup.findParent()
-            for idx, chld in enumerate(parent.contents):
-                if chld is sup:
-                    parent.insert(idx+1, span)
-                    break
+            try:
+                # reformat footnote links
+                sup = Tag(bodysoup, 'sup')
+                newanchr = Tag(bodysoup, 'a', anchr.attrs)
+                newanchr.insert(0, unicode(anchr.find(text=True)).strip('[]'))
+                sup.insert(0, newanchr)
+                anchr.replaceWith(sup)
+                # append empty span for use by footnote javascript
+                id =  newanchr['href'][1:] + '_target'
+                span = Tag(bodysoup, 'span',
+                           [('class', 'fntarget'), ('id', id)])
+                parent = sup.findParent()
+                for idx, chld in enumerate(parent.contents):
+                    if chld is sup:
+                        # remove whitespace preceding <sup>
+                        if idx > 0 and isinstance(parent.contents[idx-1],
+                                                  NavigableString):
+                            parent.contents[idx-1].replaceWith(
+                                    parent.contents[idx-1].rstrip())
+                        parent.insert(idx+1, span)
+                        break
+            except BaseException, e:
+                traceback.print_exc(e)
+                print "\nWarning: footnote backref weirdness: \n%s\n" % anchr
 
         # fix some crazy Pygments nonsense
         for pre in bodysoup.findAll('pre', {'style': "line-height: 125%"}):
