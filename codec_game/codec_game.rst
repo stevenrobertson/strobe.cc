@@ -1,21 +1,113 @@
-The Codec Game
-==============
+Ending the video quality debate: The Codec Game
+===============================================
 
 :Author: Steven Robertson
 :Contact: steven@strobe.cc
 :Copyright: 2010 Steven Robertson. CC Attribution 3.0 US.
 :Tags: Video, Algorithm, Article
 :Abstract:
-    Evaluating the quality of a video codec analytically is both a critical
-    part of the development process and rather difficult to do.
-    This might help.
+    Evaluating the quality of a video codec analytically is a surprisingly
+    challenging task. This might help.
 
-.. role:: raw-math(raw)
-    :format: latex html
+`TL;DR`__ version: I'm writing a free game where players perform video
+quality evaluations. The data will help answer questions about existing
+video codecs and drive the development of new ones.
 
-.. default-role:: raw-math
+.. __: http://www.urbandictionary.com/define.php?term=tl%3Bdr
 
 .. contents::
+
+Introduction
+------------
+
+Which one is better: x264, Theora, VP8? Despite a disheartening amount of
+discussion (tiny sample: 1__ 2__ 3__ 4__ 5__ 6__), nobody has a conclusive
+answer. The surveys which use objective video quality metrics like PSNR_
+can be justifiably dismissed as irrelevant, because many objective metrics
+have been shown to be only loosely related to the perception of video
+quality by humans, and the "codec shootout" comparisons each contain a
+disclaimer that the test method is not scientific and shouldn't be taken as
+an absolute measure of a codec's quality [#]_.
+
+.. [#]  Or at least they *should*.
+
+.. __: http://www.osnews.com/story/19019/Theora-vs.-h.264
+.. __: http://people.xiph.org/~maikmerten/youtube/
+.. __: http://grack.com/blog/2010/01/24/comparing-theora-1-1-1-with-x264/
+.. __: http://x264dev.multimedia.cx/?p=292
+.. __: http://www.on2.com/index.php?599
+.. __: http://multimedia.cx/eggs/vp8-the-savior-codec/
+
+"So there's a method that *is* scientific and *can* be taken as absolute?"
+
+Uh, er, well... not really. I mean there's a few ITU recommendations on the
+matter ([BT500]_ [ITUR#TODO]_), and the VQEG_ keeps riffing on the
+methodology (CITE). And there is some evidence that the methods they
+specify are *internally consistent*. But current thinking is that internal
+consistency doesn't really count for much in human trials, and there's
+not much evidence apart from that to indicate that the either test designs
+of the VQEG studies or the data that results are entirely faithful in
+representing video quality.
+
+Trouble is, there's not nearly enough published information about the way
+humans evaluate video quality (or the way other humans measure it) to do
+anything more than checks of internal consistency. This self-perpetuating
+dearth of data stands in the way of video quality measurement for its own
+sake and for the purposes of making judgments about video coding, and its
+root cause is simple: to preserve internal consistency, current test
+methods rely on carefully specifying as much as possible about a test
+setup. This results in tests that involve careful subject screening,
+elaborate and expensive equipment, controlled physical spaces,
+time-consuming subject supervision, and manual statistical
+post-processing.
+
+In other words, these tests are *expensive*.
+
+If we, oh Internet reader, want to answer questions about video quality in
+a way that is scientific and absolute, we have two choices.
+
+1. We get together as an Internet, rent some lab space, buy
+   reference-quality hardware, and run a painfully tedious test for each
+   question, choosing to overlook the fact that there's no real evidence
+   that the results mean what we think they do.
+
+2. We find a new way of doing video quality analysis which is affordable
+   and Internet-ready, and try to prove that it works.
+
+I'm picking option two.
+
+The Codec Game is a free (GPL) game for Linux, Mac OS, and Windows designed
+to be the first foray into answering this question. The gameplay, on its
+surface, is simple: the player is shown short video clips and asked to rate
+them somehow. While the basic principle remains the same, the exact details
+of each trial may vary; different evaluation methods, new widget styles,
+short inter-clip visual activities, changing questions, and an increasingly
+competitive rating system (among many other things) will hopefully provide
+enough challenge and novelty to keep users engaged.
+
+The variations aren't there for their own sake
+
+
+
+
+
+sits at the heart of both questions of video quality measurement for its
+own sake, and for making judgments about video
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 A thought experiment:
 
@@ -72,37 +164,170 @@ works with alarming frequency:
     http://people.xiph.org/~greg/video/ytcompare/comparison.html
 .. _evaluating new techniques: http://forum.doom9.org/showthread.php?t=141249
 
-Perhaps the most egregious aspect of the unavailability of a subjective
-evaluation method for video coding is that the essential methodology for
-such tests was developed *a century and a half ago* [Wick2002]_, but
-because it involves human subjects, controlled lab space, and
-reference-quality equipment, few are able to apply the techniques. In
-essence, we know how to do it, but we can't afford to.
+The practice of quantifying perception has been the subject of active
+research for more than a century and a half [Stev1986]_, and have been used
+in a limited number of studies to deterministically answer questions akin
+to those mentioned above, but because they require human subjects,
+controlled laboratory environments, and reference-quality equipment, these
+studies tend to be expensive and time-consuming. In short, open developers
+and independent researchers don't have access to subjective video
+comparisons simply because they're unaffordable.
 
 Let's fix that.
 
 
 
-The meaning of quality
-----------------------
+A brief tour of psychophysics
+-----------------------------
 
-It was stated above that the goal of lossy video compression is to minimize
-the perceived difference between original and coded versions. This
-statement excludes a possible preference for "pleasing distortions" akin
-to tube warmth (the nonlinear distortion of audio amplifiers that use
-thermionic valves) and other such oddities of subjective preference.  To
-that end, we restate: the goal is to attain the maximal subjective level of
-video quality per bit, or conversely to require the minimal number of bits
-in order to attain a subjective level of video quality, given a set of
-external constraints such as computational complexity.
+Quality is by definition a holistic measure, synthesized from a typically
+unknown and probably quite large set of individual assessments, judgments,
+and other frustratingly vague factors. Jumping straight in to a proposal
+for a novel measurement technique is likely to get us in to rhetorical
+trouble, so we spend the next few sections dithering about in the land of
+first principles before explaining the larger problems and their potential
+solutions.
 
-Of course, this raises the question of what exactly is meant by "subjective
-video quality". It's a philosophical question at heart, and of little
-practical importance to our results, but given that the purpose of this
-project is to assess it, a suitable definition is called for. And so:
+We'll start with a short look at some relevant parts of psychophysics_, the
+study of how subjective perceptions of a sensory stimulus are affected by
+changes of the physical characteristics of the stimulus. While
+psychophysical methods are not entirely adapted for use in subjective video
+quality assessment, as we shall explore later, they do form the basis of
+many of the published assays of SVQ determination.
 
-    Subjective video quality is a function of an individual's sensorineural
-    state, evaluation environment, and the video under evaluation.
+Indirect measurement
+````````````````````
+
+For a time, the notion that a human could consciously assess the magnitude
+of a given stimulus was considered obviously false. Objections lodged
+against it tended to be philosophical, if available at all, but the belieif
+was persistent enough to persuade generations of psychologists that direct
+measures of perception were beyond the reach of science [Stev1986]_.
+
+In his 1860 work *Elemente der Psychophysik*, Gustav Fenchner described a
+clever hack to obtain limited but still important amounts of information
+about perception without requiring subjects to make direct evaluations of
+stimulus magnitude. The proposed methodology did not involve measuring
+stimulus magnitude at all; instead, a subject's *sensitivity* to a
+difference in stimulus magnitude would be measured across a significant
+dynamic range.
+
+These ideas were extended by
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+"Define 'quality'..."
+---------------------
+
+The task of crafting an axiomatic definition for subjective phenomena that
+is both meaningful and relatively complete is a Sisyphean one.  If the
+definition for relatively clinical terms such as "subjective" and
+"measurement" is enough to stymie a group of researchers for years at a
+time [Stev1986]_, it seems rather fruitless to have a go at a concept as
+holistic as video quality. I have faith, dear reader, that you'll know it
+when you see it.
+
+Fortunately, it is quite possible to reliably and meaningfully measure
+phenomena without a complete definition, as is readily apparent by the fact
+that we can measure, well, anything. Since any proof or axiom can disarmed
+by simply questioning the nature of experience, to get any work done we
+need to agree to ignore the annoying kid in the class who keeps pointing
+out that everyone's perceptions could be systematically biased [#]_ and
+assume that things are, to a certain extent, as they seem.
+
+.. [#]  "Or we could all be in a giant simulation of a universe which
+        actually behaves inconsistently on a fundamental level, but in such
+        a way that we aren't able to detect it!" I actually postponed a
+        geometry test for two days using this kind of argument back in high
+        school.  I'm not proud.
+
+
+
+
+
+
+
+
+
+
+
+
+Virtually all lossy video compression techniques in widespread deployment
+are designed to minimize the perceived difference between the original and
+coded versions. This constraint helps to make the problem of video
+compression tractable, but it excludes the possibility of changes to a
+video stream which can improve video quality, such as post-processing
+filters, such as `this one`_ which aims to remove `ringing artifacts`_ in
+animated material.
+
+To avoid this and other pitfalls of specificity, we will simply ignore the
+issue of what exactly subjective video quality *means*, and instead focus
+only on
+
+Instead,
+
+
+
+    An assessment of the subjective video quality of a video segment is a
+    random variable with a distribution that is dependent upon an
+    individual's sensorineural capability, cognitive state, and evaluation
+    environment, as well as the video under evaluation.
+
+
+
+
+instead on
+characterizing the
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+It's necessarily equivocal in expressing what subjective video quality
+*means*. The task of constructing definitions which satisfy in this regard,
+particularly of terms related to human experience, is largely philosophical
+and rather onerous, and as an engineer I wish to avoid the kind of
+boondoggle wherein an interdisciplinary committee spends seven years
+fruitlessly debating the meanings of the terms "sensation" and
+"measurement" [Stev1986]_.
+
+Despite dodging
+
+
+
+Instead of focusing on intuitive meaning, we identify the
+
+"measurement"
+
+
+If this definition seems weak, it's because it was intended to be. The task
+of defining
+
 
 If you're thinking that this definition is pretty spineless, you're
 dead-on; it was chosen to be as wimpy as possible, and for good reason.
@@ -412,12 +637,12 @@ Forced choice assessment
 Scaling
 ```````
 
-* 
+*
 
 
 ----
 
-* The 2AFC test design provides a number of benefits for the 
+* The 2AFC test design provides a number of benefits for the
 
 * Existing testing methods are challenging because
 
@@ -502,6 +727,8 @@ Well, if you love it so much...
 
 Works cited
 -----------
+
+.. _psychophysics: http://en.wikipedia.org/wiki/Psychophysics
 
 .. [Stev1986]   Stevens, S. S., & Stevens, G. (1986). *Psychophysics:
                 Introduction to its perceptual, neural, and social
