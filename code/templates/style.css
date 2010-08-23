@@ -16,7 +16,7 @@ img {border: none;}
 
 /* all fonts, for ease of screwing around with typekit */
 body {font-family: "skolar-1", "skolar-2", "Skolar", "Georgia", serif;}
-div.topbar, .footnote, .footnote-reference, .caption, div.big, div.fhdr {
+div.topbar, .footnote, .footnote-reference, .caption, div.big, div.fhdr, a.ftop1l {
     font-family: "mentone-1", "mentone-2", "Mentone", sans-serif;
 }
 
@@ -201,7 +201,7 @@ div.ftop {
     height: 90px;
     margin-top: 4em;
     background: -webkit-gradient(linear, left top, left bottom,
-    from(#444), to(#111)));
+    from(#444), to(#111));
     background: -moz-linear-gradient(top, #444, #111);
     -moz-background-size: 100% 100%;
     -webkit-background-size: 100% 100%;
@@ -229,7 +229,7 @@ div.ftop1 {
 }
 
 a.ftop1l {
-    color: white;
     font-size: 200%;
     font-weight: 700;
+    color: white;
 }
