@@ -51,8 +51,8 @@ span.article_list_title_minor {
 
 <div class="article_list">
 % for idx, article in reversed(list(enumerate(article_list))):
-    <a href="/${article['path']}/" title="${article['html']['title']}">
-        <div class="article_list_entry">
+    <div class="article_list_entry">
+        <a href="/${article['path']}/" title="${article['html']['title']}">
             <span class="article_list_number">${idx+1}</span>
 % if 'Article' in article.get('tags', ''):
             <span class="article_list_title_major">
@@ -61,8 +61,8 @@ span.article_list_title_minor {
 % endif
                 ${article['html']['title']}
             </span>
-        </div>
-    </a>
+        </a>
+    </div>
 %endfor
 </div>
 
