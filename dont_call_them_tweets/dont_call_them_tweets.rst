@@ -16,11 +16,12 @@ Here's a quote from a recent article_ about Android:
 .. _article: http://blogs.computerworld.com/17196/dear_steve_jobs_youre_wrong_again
 .. _tweet: http://twitter.com/Arubin/status/27808662429
 
-Another one, from an analysis_ \[#] on the same subject:
+Another one, from an analysis_\ [#]_ on the same subject:
 
     In theory, Android is more open than Apple on the software side; `Andy
     Rubin's point` is irrefutable.
 
+.. _analysis: http://open.neurostechnology.com/content/future-hardware
 .. _Andy Rubin's point: http://twitter.com/Arubin/status/27808662429
 
 .. [#]  Full disclosure: I helped write it.
