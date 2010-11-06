@@ -207,7 +207,7 @@ $(document).ready(function() {
       if (verstr) {pass = parseFloat(verstr[1])>=1.8;}
       verstr = navigator.userAgent.match(/AppleWebKit\/(\d+\.\d+)/);
       if (verstr) {pass = parseFloat(verstr[1])>=999999.;}//not yet
-      if (False) { // TODO: disabled, xhtml 1.0 required for comments
+      if (false) { // TODO: disabled, xhtml 1.0 required for comments
         $("img.eqn").css("display: none;");
         $("span.mmleqn").css("display: block-inline;");
       }
