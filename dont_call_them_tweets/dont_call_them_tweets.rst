@@ -18,8 +18,8 @@ Here's a quote from a recent article_ about Android:
 
 Another one, from an analysis_\ [#]_ on the same subject:
 
-    In theory, Android is more open than Apple on the software side; `Andy
-    Rubin's point` is irrefutable.
+    In theory, Android is more open than Apple on the software side;
+    `Andy Rubin's point`_ is irrefutable.
 
 .. _analysis: http://open.neurostechnology.com/content/future-hardware
 .. _Andy Rubin's point: http://twitter.com/Arubin/status/27808662429
@@ -33,6 +33,6 @@ Such neologisms are occasionally appropriate, and convey helpful
 information and context to the reader. However, the popularity of Twitter,
 Facebook, and other "new media" ensures that your audience will have a
 broad set of stories and experiences keyed to these terms. Invoking the
-proper names for these tools can burn a surprising amount of your reader's
+proper names for these tools can burn through much of your reader's
 acutely finite attention span.
 
