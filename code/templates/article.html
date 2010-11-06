@@ -1,14 +1,9 @@
 ## -*- coding: utf-8 -*-
 <%inherit file="base.html" />
 <%def name="meta()">
+  <script src="https://www.google.com/jsapi?key=ABQIAAAATV8s-yZOF3HmYPluQ5cMWBSc8_2eGK2TJ0LDO8RPpO2cGu9BPxQpxhQ-0VDtf2t9DLJa_xg92SWDXQ" type="text/javascript"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.4.3/jquery.min.js"></script>
     ${doc['html']['meta']}
-% if 'published' in doc and 'Article' in doc.get('tags', ''):
-    <script type="text/javascript">
-        var disqus_identifier = "${doc['path']}";
-        var disqus_url = "http://strobe.cc/${doc['path']}/";
-        var disqus_title = "${doc['html']['title']}";
-      </script>
-% endif
     <title>${doc['html']['title']}</title>
 </%def>
 
@@ -177,30 +172,34 @@ No tags
 
 <div style="font-size: 90%; padding-top: 2.5em;">
   Other formats:
-  <a href="/${doc['path']}/${doc['path']}.pdf">PDF</a> (not entirely working).
+  <a href="/${doc['path']}/${doc['path']}.pdf">PDF</a>.
   <a href="/${doc['path']}/${doc['path']}.rst">ReStructuredText source</a>.
 </div>
 
+% if 'published' in doc and 'Article' in doc.get('tags', ''):
+<div id="disqus_thread"></div>
 <script type="text/javascript">
   //<![CDATA[
-  function forEachByClass(tag, cls, fn) {
-    var elems = document.getElementsByTagName(tag);
-    for (var i = 0; i < elems.length; i++) {
-      if(elems[i].className == cls) {
-        fn(elems[i]);
-      }
-    }
-  }
-  window.onload = function() {
-    // reposition footnotes
-    forEachByClass("div", "fnwrap", function(elem) {
-      try {
-        var footnote = elem.getElementsByTagName("p")[0];
-        var target = document.getElementById(footnote.id + "_target");
-        footnote = footnote.parentNode.removeChild(footnote);
-        target.appendChild(footnote);
-      } catch (e) {}
-      })
+    var disqus_developer = 1;
+    var disqus_identifier = "${doc['path']}";
+    var disqus_url = "http://strobe.cc/${doc['path']}/";
+    var disqus_title = "${doc['html']['title']}";
+  (function() {
+   var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+   dsq.src = 'http://strobecc.disqus.com/embed.js';
+   (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+   })();
+  // ]]>
+</script>
+<noscript><a href="http://disqus.com/?ref_noscript=strobecc">View the discussion thread.</a></noscript>
+% endif
+
+<script type="text/javascript">
+  //<![CDATA[
+$(document).ready(function() {
+    $(".fntarget").append(function(idx) {
+      return $("#"+$(this).attr("id").replace("_target", ""))
+    });
     // check for mathml-compatible browser, enable mathml if ok
     try {
       var pass = false;
@@ -208,21 +207,12 @@ No tags
       if (verstr) {pass = parseFloat(verstr[1])>=1.8;}
       verstr = navigator.userAgent.match(/AppleWebKit\/(\d+\.\d+)/);
       if (verstr) {pass = parseFloat(verstr[1])>=999999.;}//not yet
-      if (pass) {
-        forEachByClass("img", "eqn", function(elem) {
-            elem.style.display = "none";
-        });
-        forEachByClass("span", "mmleqn", function(elem) {
-            elem.style.display = "inline";
-        });
+      if (False) { // TODO: disabled, xhtml 1.0 required for comments
+        $("img.eqn").css("display: none;");
+        $("span.mmleqn").css("display: block-inline;");
       }
     } catch (e) {}
-  }
+});
   // ]]>
 </script>
 
-
-% if 'published' in doc and 'Article' in doc.get('tags', ''):
-<div class="comments" id="disqus_thread"></div>
-<script type="text/javascript" src="http://disqus.com/forums/strobecc/embed.js"></script><noscript><a href="http://disqus.com/forums/strobecc/?url=ref">View the discussion thread.</a></noscript>
-% endif
