@@ -2,7 +2,7 @@
 <%inherit file="base.html" />
 <%def name="meta()">
     ${doc['html']['meta']}
-% if 'published' in doc and 'article' in doc.get('tags', ''):
+% if 'published' in doc and 'Article' in doc.get('tags', ''):
     <script type="text/javascript">
         var disqus_identifier = "${doc['path']}";
         var disqus_url = "http://strobe.cc/${doc['path']}/";
