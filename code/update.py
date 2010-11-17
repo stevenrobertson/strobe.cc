@@ -269,7 +269,7 @@ class SiteProcessor:
         hist = os.path.join(os.path.dirname(path), 'history')
         if not os.path.isdir(hist):
             os.mkdir(hist)
-        self._write("history.html", os.path.join(hist, 'index.xhtml'), doc=doc)
+        self._write("history.html", os.path.join(hist, 'index.html'), doc=doc)
 
     def _process_doc(self, path):
         """Processes a reStructuredText document. Writes the processed
@@ -326,7 +326,7 @@ class SiteProcessor:
             doc['edited'] = datetime.fromtimestamp(os.path.getmtime(path))
 
         body = self._clean_html(doc)
-        outpath = os.path.join(self.root, slug, 'index.xhtml')
+        outpath = os.path.join(self.root, slug, 'index.html')
         self._write("article.html", outpath, doc=doc, body=body)
 
         if 'published' in doc and 'Article' in doc.get('tags', ''):
@@ -379,7 +379,7 @@ class SiteProcessor:
 
     def _build_index(self):
         """Rebuilds the site index from the stored article list."""
-        path = os.path.join(self.root, 'index.xhtml')
+        path = os.path.join(self.root, 'index.html')
         self.published.sort(key=lambda doc: doc['published'])
         self._write('home.html', path, article_list=self.published)
 

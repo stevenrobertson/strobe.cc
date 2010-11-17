@@ -29,7 +29,7 @@ Another one, from an analysis_\ [#]_ on the same subject:
 One of these leaves me thinking about what Mr. Rubin said; the other,
 about *where he said it*.
 
-Such neologisms are occasionally appropriate, and convey helpful
+Such neologisms are occasionally appropriate, and can convey helpful
 information and context to the reader. However, the popularity of Twitter,
 Facebook, and other "new media" ensures that your audience will have a
 broad set of stories and experiences keyed to these terms. Invoking the
