@@ -36,6 +36,7 @@ try:
     from mercurial import cmdutil, ui, hg
     from mercurial.error import Abort, LookupError
 except ImportError:
+    traceback.print_exc()
     print "Import error. Check dependencies."
     sys.exit(0)
 
