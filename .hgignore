@@ -1,7 +1,10 @@
 syntax: glob
+*.html
 *.xhtml
 *.pyc
 *.swp
 *.xml
 *.gif
 *.pdf
+*.log
+
