@@ -161,7 +161,7 @@ They would be right to do so.
 
 They would be right to do so. The variety
 of failures that a capricious universe may inflict upon a storage subsystem
-is essentially limitless [#]_, and the idea that a piece of software can
+is essentially limitless [#], and the idea that a piece of software can
 continue to operate in the face of *any* hardware fault is preposterous.
 
 This is not to suggest that filesystem developers don't take stability in
@@ -211,7 +211,7 @@ Say that a drive has a few bad sectors, or that there's a bug in a
 chipset's storage I/O which causes a drive to behave improperly in certain
 circumstances. Ideally, we would be able to detect such failures, but
 technologies like `S.M.A.R.T.`_ are only partially effective in practice
-and so the is common [#]_ such a condition could occur. Should a filesystem
+and so the is common [#] such a condition could occur. Should a filesystem
 be expected to function correctly on faulty hardware?
 
 
@@ -251,3 +251,7 @@ Nor are hardware manufacturers ignorant of the
 .. _journaling: http://en.wikipedia.org/wiki/Journaling_file_system
 
 .. _fsck: http://en.wikipedia.org/wiki/Fsck
+
+.. _jffs2:
+.. _zfs:
+.. _btrfs:

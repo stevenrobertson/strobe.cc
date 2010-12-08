@@ -329,7 +329,9 @@ Implementation
 
 
 
-
+.. _psnr:
+.. _bt500:
+.. _vqeg:
 
 
 .. [Stev1986]   Stevens, S. S., & Stevens, G. (1986). *Psychophysics:
