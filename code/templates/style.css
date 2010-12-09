@@ -31,6 +31,8 @@ pre, tt {
 
 pre {line-height: normal;}
 
+div.blockcode { margin-bottom: 1em; }
+
 /* page basics, grid layout. */
 .iwrap {
     padding-left: 205px;
