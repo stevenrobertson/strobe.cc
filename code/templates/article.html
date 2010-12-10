@@ -180,11 +180,11 @@ No tags
 <div id="disqus_thread"></div>
 <script type="text/javascript">
   //<![CDATA[
-    var disqus_developer = 1;
-    var disqus_identifier = "${doc['path']}";
-    var disqus_url = "http://strobe.cc/${doc['path']}/";
-    var disqus_title = "${doc['html']['title']}";
   (function() {
+   var disqus_identifier = "${doc['path']}",
+       disqus_shortname = "strobecc",
+       disqus_url = "http://strobe.cc/${doc['path']}/",
+       disqus_title = "${doc['html']['title']}";
    var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
    dsq.src = 'http://strobecc.disqus.com/embed.js';
    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
