@@ -21,8 +21,8 @@ and performance  improvements to be made, but it gets ~500x the performance
 of the CPU version, which is quite satisfying for a week of work. Here's an
 example image (click for full):
 
-..  image:: unsynced_small.jpg
-    target: unsynced.jpg
+.. image:: unsynced_small.jpg
+   :target: unsynced.jpg
 
 .. _paper: sd-report.pdf
 .. _coded: https://bitbucket.org/srobertson/cuburn
