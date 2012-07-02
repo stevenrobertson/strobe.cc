@@ -1,0 +1,77 @@
+<!DOCTYPE html5>
+<html>
+<head>
+  <title>$title$</title>
+  <link rel="stylesheet" href="../css/style.css">
+  <link href="/feeds/content.xml" type="application/atom+xml"
+        rel="alternate" title="strobe.cc articles" />
+</head>
+<body>
+  <div class="content">
+    $body$
+  </div>
+
+  <header>
+  <div class="logo">
+    <div class="logo-svg-wrapper">
+    <svg xmlns="http://www.w3.org/2000/svg" baseProfile="tiny"
+      width="200" height="200" id="strobe_logo_svg" version="1.2">
+      <g transform="scale(2)">
+        <rect fill="#3b0090" width="100" height="100" rx="4" ry="4" />
+        <g id="lines"
+          style="shape-rendering: crispEdges; fill: none; stroke: white; stroke-width: 1;">
+          <polyline points=" 0 14, 10 14, 10 30, 26 30,
+                            26 14, 42 14, 42 30, 58 30,
+                            58 14, 74 14, 74 30, 90 30, 90 14, 100 14"/>
+          <polyline points=" 0 58, 58 58, 58 42, 100 42" />
+          <polyline fill="none" stroke="white" stroke-width="1"
+            points=" 0 86, 42 86, 58 70, 100 70" />
+          <polyline fill="none" stroke="white" stroke-width="1"
+            points=" 0 70, 42 70, 58 86, 100 86" />
+          <g style="shape-rendering: geometricPrecision;">
+            <!-- At low res, some lines disappear. Trace smoothed lines on top. -->
+            <line x1="42"  y1="70" x2="58"  y2="86"/>
+            <line x1="42"  y1="86" x2="58"  y2="70"/>
+            <line x1="58" y1="0" x2="58" y2="100"
+              stroke-opacity="0.5" stroke-dasharray="1, 2" />
+          </g>
+        </g>
+      </g>
+    </svg>
+    </div>
+    <h1><a href="/">strobe.cc</a></h1>
+  </div>
+  <div class="logo-width">
+    <h4>About</h4>
+    <p>Steven Robertson makes things for people who make things for people.
+    <a href="/about/">more...</a></p>
+  </div>
+  <div class="normal-width">
+    <h4>Articles</h4>
+    <ul>
+      $promolist$
+    </ul>
+    <a id="articles-link" href="/articles/">more...</a>
+  </div>
+  <div class="normal-width">
+    <h4>Elsewhere</h4>
+    <ul>
+      <li><a href="http://twitter.com/_srobertson">Twitter</a></li>
+      <li><a href="http://github.com/stevenrobertson">GitHub</a></li>
+    </ul>
+  </div>
+
+  </header>
+
+  <footer>
+    <span class="ib">
+      Copyright 2009-2012 by
+      <span xmlns:dc="http://purl.org/dc/elements/1.1/" href="http://purl.org/dc/dcmitype/Text" rel="dc:type"></span>
+      <a xmlns:cc="http://creativecommons.org/ns#" href="http://strobe.cc" property="cc:attributionName" rel="cc:attributionURL">Steven Robertson</a>.
+      <a rel="license" href="http://creativecommons.org/licenses/by/3.0/us/">CC Attribution 3.0 US</a>.
+      <a xmlns:dc="http://purl.org/dc/elements/1.1/" href="http://strobe.cc" rel="dc:source"></a>
+    </span>
+    <span class="ib">steven@strobe.cc / +1 (813) 728 7254</span>
+  </footer>
+</body>
+</html>

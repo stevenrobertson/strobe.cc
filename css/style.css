@@ -1,0 +1,188 @@
+@import url(http://fonts.googleapis.com/css?family=Puritan:400,700|PT+Serif:400,700,400italic);
+
+h2, h3, h4, div.metahead, div.summary > p, div.byline {
+    font-family: "Puritan 2.0", "Puritan", sans-serif;
+    margin-bottom: 0;
+}
+
+body {
+    background-color: white;
+    margin: 2em;
+    font-family: "PT Serif";
+    font-size: 120%;
+}
+
+div.content, footer {
+    max-width: 700px;
+    padding: 0 0 0 360px;
+    margin: auto;
+}
+
+header {
+    position: fixed;
+    left: 60px;
+    top: 60px;
+    width: 360px;
+    font-size: 80%;
+}
+
+div.logo, div.logo-width {
+    width: 200px;
+}
+
+div.logo-svg-wrapper {
+    width: 200px;
+    height: 200px;
+    background: url('/images/logo.png');
+}
+
+
+h1 {
+    font-size: 48px;
+    font-weight: 400;
+    width: 100%;
+    text-align: center;
+    margin: 0;
+    bottom: 0;
+}
+
+h1 a {
+    color: inherit;
+}
+
+h4 {
+    font-size: 120%;
+    margin-bottom: 0;
+    text-transform: lowercase;
+}
+
+header p, header ul {
+    margin: 0;
+}
+
+header ul {
+    list-style-type: none;
+    padding-left: 0;
+}
+
+a#articles-link {
+    font-weight: 700;
+    padding-top: 0;
+}
+
+h2 {
+    position: relative;
+    font-size:  180%;
+    color: #777;
+}
+
+h3 {
+    font-size: 150%;
+    font-weight: 400;
+    margin-bottom: 0.2em;
+}
+
+p.desc {
+    color: #666;
+    font-size: 70%;
+    margin: 0;
+}
+
+div.headlinks {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    font-size: 90%;
+}
+
+a {
+    color: #058;
+    text-decoration: none;
+}
+
+footer {
+    padding-top: 3em;
+    font-family: "PT Sans";
+    font-size: 10pt;
+    color: #333;
+}
+
+p {
+    line-height: 150%;
+}
+
+p > a, footer a {
+    font-weight: 700;
+}
+
+div.byline {
+    font-size: 70%;
+    color: #444;
+}
+
+div.summary{
+    font-size: 90%;
+    color: #444;
+}
+
+div.metahead {
+    padding-top: 1em;
+    font-weight: 700;
+    text-transform: lowercase;
+}
+
+blockquote {
+    border-left: 1px solid rgba(0,0,0,0.2);
+    margin-left: 0;
+    padding-left: 1em;
+}
+
+blockquote > p.attrib {
+    font-style: italic;
+    position: relative;
+    top: -0.5em;
+    text-align: right;
+}
+
+span.ib {
+    display: inline-block;
+}
+
+@media (max-height: 640px) {
+header {
+    position: absolute;
+}
+}
+
+@media (max-width: 940px) {
+
+div.content, footer {
+    padding: 0;
+    margin: 0.5em;
+}
+
+div.logo {
+    position: absolute;
+    top: 10px;
+    left: 50%;
+    margin-left: -100px;
+}
+
+div.content {
+    margin-top: 300px;
+}
+
+header {
+    position: inherit;
+    width: inherit;
+    max-width: 40em;
+    margin: auto;
+}
+
+div.logo-width, div.normal-width {
+    width: inherit;
+    display: block;
+}
+
+}
+
