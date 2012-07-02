@@ -53,8 +53,10 @@ readPage = either (error . show) mkPage . parse page "page"
 reduceHeaders (Header n xs) = Header (n+2) xs
 reduceHeaders x = x
 
-pageCompiler = (getResourceString >>^ readPage)
-        >>> addDefaultFields
+pageCompiler = getResourceString
+        >>> readPage
+        ^>> changeField "published" (++ "T00:00:00Z")
+        ^>> addDefaultFields
         >>> pageReadPandoc
         >>^ fmap (writePandocWith writerOpts . topDown reduceHeaders)
   where
@@ -102,7 +104,13 @@ main = do
                          $ readMarkdown defaultParserState summary
                 in "<div class=\"summary\">" ++ html ++ "</div>"
 
+        applyAtomTemplate page tmpl =
+            let desc = pageBody $ applyTemplateWith (const "") tmpl page
+            in  setField "description" desc page
+
+
         compileArticle = compile $ pageCompiler
+            >>> require "templates/article_atom.html" applyAtomTemplate
             >>> applySummaryTemplate
             ^>> applyTemplateCompiler "templates/article.html"
             >>> applyBaseTemplate
@@ -139,8 +147,9 @@ main = do
     let feedConfig = FeedConfiguration "strobe.cc" ""
                                        "Steven Robertson" "http://strobe.cc"
     match "feeds/content.xml" $ route idRoute
-    create "feeds/content.xml" $
-        requireAll_ "articles/.*[.](md|rst)" >>> renderAtom feedConfig
+    create "feeds/content.xml" $ requireAll_ (regex "articles/.*[.](md|rst)")
+        >>> recentFirst
+        ^>> renderAtom feedConfig
 
     match "index.html" $ route idRoute
     create "index.html" $ compileIndex id "articles"
