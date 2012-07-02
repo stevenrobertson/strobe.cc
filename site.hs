@@ -4,6 +4,7 @@ import Control.Applicative
 import Control.Arrow ((>>>), (>>^), (^>>), arr)
 import Data.List (isSuffixOf, intercalate, sortBy)
 import Data.Ord (comparing)
+import Data.Maybe (catMaybes)
 import Data.Monoid
 import Data.Time.Clock (UTCTime)
 import Data.Time.Format (parseTime, formatTime)
@@ -121,14 +122,25 @@ main = do
                          $ readMarkdown defaultParserState summary
                 in "<div class=\"summary\">" ++ html ++ "</div>"
 
+        setByline page = setField "byline" byline page
+          where
+            byline = intercalate " · " . catMaybes $ infos
+            infos = [ fmap ("Published: " ++) $ get "pubHuman"
+                    , fmap ("Updated: " ++) $ get "updHuman"
+                    , fmap (++ " characters") $ get"characters"
+                    ]
+            get k = maybe Nothing nonempty $ getFieldMaybe k page
+            nonempty "" = Nothing
+            nonempty x = Just x
+
         applyAtomTemplate page tmpl =
             let desc = pageBody $ applyTemplateWith (const "") tmpl page
             in  setField "description" desc page
 
-
         compileArticle = compile $ pageCompiler
             >>> require "templates/article_atom.html" applyAtomTemplate
-            >>> applySummaryTemplate
+            >>> setByline
+            ^>> applySummaryTemplate
             ^>> applyTemplateCompiler "templates/article.html"
             >>> applyBaseTemplate
             >>> relativizeUrlsCompiler
