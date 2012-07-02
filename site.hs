@@ -2,14 +2,17 @@
 {-# LANGUAGE OverloadedStrings #-}
 import Control.Applicative
 import Control.Arrow ((>>>), (>>^), (^>>), arr)
-import Data.List (sortBy)
+import Data.List (isSuffixOf, intercalate, sortBy)
 import Data.Ord (comparing)
 import Data.Monoid
+import Data.Time.Clock (UTCTime)
+import Data.Time.Format (parseTime, formatTime)
 import Text.Pandoc (Block(..), topDown, writerHtml5, writeHtmlString,
                     readMarkdown, defaultParserState)
 import Text.Parsec (alphaNum, anyChar, char, manyTill,
                     parse, option, string, try)
 import Text.Parsec.String (Parser)
+import System.Locale (defaultTimeLocale)
 
 import qualified Data.Map as M
 import qualified Data.Set as S
@@ -53,14 +56,28 @@ readPage = either (error . show) mkPage . parse page "page"
 reduceHeaders (Header n xs) = Header (n+2) xs
 reduceHeaders x = x
 
+atomDateFmt = "%Y-%m-%dT%H:%m:%SZ"
+humanDateFmt = "%B %e, %Y"
+
+humanizeDate = maybe "" fmt' . parseTime defaultTimeLocale atomDateFmt
+  where
+    fmt' :: UTCTime -> String
+    fmt' = formatTime defaultTimeLocale humanDateFmt
+
 pageCompiler = getResourceString
         >>> readPage
-        ^>> changeField "published" (++ "T00:00:00Z")
+        ^>> changeField "published" normDate
+        ^>> changeField "updated" normDate
         ^>> addDefaultFields
-        >>> pageReadPandoc
+        >>> renderModificationTime "modified" atomDateFmt
+        -- >>> copyField "modified" "updated"
+        >>> renderField "published" "pubHuman" humanizeDate
+        ^>> renderField "updated" "updHuman" humanizeDate
+        ^>> pageReadPandoc
         >>^ fmap (writePandocWith writerOpts . topDown reduceHeaders)
   where
     writerOpts = defaultHakyllWriterOptions { writerHtml5 = True }
+    normDate d = if "Z" `isSuffixOf` d then d else d ++ "T00:00:00Z"
 
 recentFirst = reverse . sortBy (comparing (getField "published"))
 

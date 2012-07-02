@@ -1,5 +1,6 @@
 - title: Dear Typekit...
 - published: 2009-10-28
+- updated: 2010-02-01
 - summary:
     If you're using a supported browser, the fonts you see on this site are
     provided by Typekit_. It's generally an awesome service, but it doesn't yet

@@ -1,6 +1,7 @@
 - title: CUDA atomics: a practical analysis
 - author: Steven Robertson <steven@strobe.cc>
 - published: 2009-11-12
+- updated: 2009-12-30
 - summary:
     NVIDIA has been coy with details about how they implement certain
     features, but the right benchmarks can help uncover their approach,

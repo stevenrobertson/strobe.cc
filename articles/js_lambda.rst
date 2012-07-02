@@ -1,5 +1,6 @@
 - title: Roll your own JavaScript lambda syntax
 - published: 2010-12-09
+- updated: 2012-07-01
 - summary:
     The syntax for anonymous functions in JavaScript sucks. I found it well
     worth the trouble to design and implement something better.

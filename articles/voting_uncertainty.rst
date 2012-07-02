@@ -1,8 +1,6 @@
 - title: Voting in the face of uncertainty
 - author: Steven Robertson <steven@strobe.cc>
 - published: 2011-08-14
-- teaser:
-- summary:
 
 ---
 
