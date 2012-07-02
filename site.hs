@@ -87,7 +87,11 @@ main = do
 
   promoted <- S.fromList . lines <$> readFile "promoted.txt"
 
-  hakyll $ do
+  let opts = defaultHakyllConfiguration { deployCommand =
+        "s3cmd sync --delete-removed _site/ s3://strobe.cc && " ++
+        "s3cmd sync --delete-removed _site/ s3://www.strobe.cc" }
+
+  hakyllWith opts $ do
     match "images/*" $ do
         route   idRoute
         compile copyFileCompiler
