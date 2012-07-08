@@ -65,12 +65,18 @@ humanizeDate = maybe "" fmt' . parseTime defaultTimeLocale atomDateFmt
     fmt' :: UTCTime -> String
     fmt' = formatTime defaultTimeLocale humanDateFmt
 
+dropIndexHtml url =
+    if "index.html" `isSuffixOf` url
+        then take (length url - 10) url
+        else url
+
 pageCompiler = getResourceString
         >>> readPage
         ^>> changeField "published" normDate
         ^>> changeField "updated" normDate
         ^>> addDefaultFields
-        >>> renderModificationTime "modified" atomDateFmt
+        >>> changeField "url" dropIndexHtml
+        ^>> renderModificationTime "modified" atomDateFmt
         -- >>> copyField "modified" "updated"
         >>> renderField "published" "pubHuman" humanizeDate
         ^>> renderField "updated" "updHuman" humanizeDate
