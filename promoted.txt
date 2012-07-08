@@ -1,3 +1,4 @@
+nexus-7-credit
 cuda_atomics
 js_lambda
 voting_uncertainty
