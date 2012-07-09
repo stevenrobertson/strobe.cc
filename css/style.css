@@ -7,7 +7,7 @@ h2, h3, h4, div.metahead, div.summary > p, div.byline {
 
 body {
     background-color: white;
-    margin: 2em;
+    margin: 2em 1em;
     font-family: "PT Serif";
     font-size: 120%;
 }
@@ -20,10 +20,14 @@ div.content, footer {
 
 header {
     position: fixed;
-    left: 60px;
-    top: 60px;
+    top: 2em;
+    left: 2em;
     width: 360px;
     font-size: 80%;
+}
+
+div.logo {
+    max-width: 75%;
 }
 
 div.logo, div.logo-width {
@@ -115,6 +119,12 @@ p > a, footer a {
     font-weight: 700;
 }
 
+hr {
+    width: 6em;
+    margin: auto;
+    border: solid gray 1.5px;
+}
+
 div.byline {
     font-size: 70%;
     color: #444;
@@ -148,17 +158,21 @@ span.ib {
     display: inline-block;
 }
 
-@media (max-height: 640px) {
+@media screen and (max-height: 640px) {
 header {
     position: absolute;
 }
 }
 
-@media (max-width: 940px) {
+@media (max-width: 940px), (max-device-width: 640px) {
+div.bound {
+    width: 18em;
+    margin: auto;
+}
 
 div.content, footer {
     padding: 0;
-    margin: 0.5em;
+    margin: 0.5em auto;
 }
 
 div.logo {
@@ -170,10 +184,11 @@ div.logo {
 
 div.content {
     margin-top: 300px;
+    padding: none;
 }
 
 header {
-    position: inherit;
+    position: static;
     width: inherit;
     max-width: 40em;
     margin: auto;
@@ -183,6 +198,4 @@ div.logo-width, div.normal-width {
     width: inherit;
     display: block;
 }
-
 }
-
