@@ -1,5 +1,4 @@
-nexus-7-credit
-cuda_atomics
-js_lambda
-voting_uncertainty
-do_androids_render
+nexus-7-credit Nexus 7's most important feature
+voting_uncertainty Voting in the face of uncertainty
+js_lambda Roll your own JavaScript lambda syntax
+cuda_atomics CUDA atomics: a detailed analysis

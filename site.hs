@@ -88,11 +88,12 @@ pageCompiler = getResourceString
 
 recentFirst = reverse . sortBy (comparing (getField "published"))
 
+expandPromoted = map (mkPage . words) . lines . pageBody where
+  mkPage (baseurl : title) =
+    fromMap . M.fromList $ [("url", '/' : baseurl), ("title", unwords title)]
+
 main :: IO ()
 main = do
-
-  promoted <- S.fromList . lines <$> readFile "promoted.txt"
-
   let opts = defaultHakyllConfiguration { deployCommand =
         "s3cmd sync --delete-removed _site/ s3://strobe.cc && " ++
         "s3cmd sync --delete-removed _site/ s3://www.strobe.cc" }
@@ -110,15 +111,16 @@ main = do
         route   idRoute
         compile compressCssCompiler
 
+    match "promoted.txt" $ do
+        route   idRoute
+        compile readPageCompiler
+
     match "templates/*" $ compile templateCompiler
 
-    let pageIsPromoted = (`S.member` promoted) . takeWhile (/= '/') . tail
-                       . M.findWithDefault "" "url" . pageMetadata
-
-        applyBaseTemplate =
-            setFieldPageList (take 5 . recentFirst . filter pageIsPromoted)
-                    "templates/promolist_item.html" "promolist"
-                    (regex ("ffs/.*[.](md|rst)"))
+    let applyBaseTemplate =
+            setFieldPageList (take 5 . expandPromoted . head)
+                "templates/promolist_item.html" "promolist"
+                "promoted.txt"
             >>> applyTemplateCompiler "templates/base.html"
 
         -- Because the built-in syntax lacks so much as an 'ifdef' operator,
@@ -168,11 +170,6 @@ main = do
         route   $ gsubRoute "drafts/" (const "")
         route   $ gsubRoute "pages/" (const "")
         compile copyFileCompiler
-
-    match (regex "ffs/.*[.](md|rst)") $ do
-        route   $ gsubRoute ".md" (const "/index.html") `composeRoutes`
-                  gsubRoute ".rst" (const "/index.html")
-        compile $ pageCompiler >>^ (changeField "url" (drop 4))
 
     let compileIndex lim dir = constA mempty
             >>> setField "title" "strobe.cc"
